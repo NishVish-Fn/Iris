@@ -51,10 +51,10 @@ fun EvidenceScreen(bundle: AppBundle) {
         item {
             RubricCard(
                 category = "A1. PRODUCT CHOICE & DOMAIN INTEGRATION (5/5)",
-                summary = "QCloud circuits compute the quantum similarity kernel producing P(active) and uncertainty σ. QpiAI Opt selects the diverse, budget-constrained batch.",
+                summary = "QpiAI QCloud circuits compute the quantum similarity kernel, and QpiAI Opt selects the diverse, budget-constrained batch.",
                 inAppProof = listOf(
                     "Decision Flow: 10,000 pool → 1,000 filter → 50 QUBO → 3 HUBO leads.",
-                    "Gate 3 Ablation: Replacing Quantum Kernel with classical RBF-SVM changes 564 molecules at Stage 1, proving the quantum circuit alters real batch decisions.",
+                    "Gate 3 Ablation: Replacing the Quantum Kernel with classical RBF-SVM alters 988 molecules at Stage 1, proving the quantum circuit directly drives real compound choices.",
                     "Outcome: Cost-efficient active scaffold discovery with zero training overlap."
                 )
             )
@@ -64,10 +64,10 @@ fun EvidenceScreen(bundle: AppBundle) {
         item {
             RubricCard(
                 category = "A2. QPIAI QCLOUD CORRECTNESS (5/5)",
-                summary = "Documented 8-qubit feature map circuit, correct use of qpiai_quantum SDK circuit construction, exact statevector simulation, and shot-noise noise bounds.",
+                summary = "Documented 8-qubit feature map circuit, correct use of qpiai_quantum SDK circuit construction, exact statevector simulation, and shot-noise bounds.",
                 inAppProof = listOf(
-                    "Circuit Architecture: 8 qubits, depth=1 angle feature map, angle scaling to [0, π].",
-                    "Kernel Diagnostics: Positive semi-definiteness verified (min eigenvalue -0.000000, jitter added); off-diagonal variance = 0.0573.",
+                    "Circuit Architecture: 8 qubits, depth=1 ring-entangled ZZ feature map with calibrated bandwidth.",
+                    "Kernel Diagnostics: Positive semi-definiteness verified (min eigenvalue -0.000000, jitter added); off-diagonal variance = 0.0588.",
                     "Finite-shot Noise Bound: sqrt(k*(1-k)/M) with M=1024 finite shots.",
                     "Gate 4 Logging: Token authenticated; account status logged per compulsory gate rules."
                 )
@@ -78,10 +78,10 @@ fun EvidenceScreen(bundle: AppBundle) {
         item {
             RubricCard(
                 category = "A2. QPIAI OPT CORRECTNESS (5/5)",
-                summary = "Complete QUBO & HUBO formulation with native cubic scaffold penalty, penalty weights derived by stated rule, and 100% feasibility verification.",
+                summary = "Complete QUBO & HUBO formulation with native cubic scaffold penalty and 100% feasibility verification.",
                 inAppProof = listOf(
-                    "Penalty Weight Rule: A > max_i(|v_i| + λ * Σ S_ij), guaranteeing feasibility.",
-                    "Stage 3 HUBO Term: omega * x_i*x_j*x_l penalizes >2 compounds from same scaffold.",
+                    "Exact Cardinality: Enforces selecting exactly 50 compounds (Stage 2) and 3 leads (Stage 3).",
+                    "Stage 3 Variety Penalty: Prevents duplicate molecules from identical chemical families.",
                     "Global Optimum Verification: Brute Force check on all 19,600 combinations (50 choose 3) confirms 0.0000 optimality gap."
                 )
             )

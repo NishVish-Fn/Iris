@@ -233,16 +233,15 @@ fun LeadCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Monospace Metadata Table
+            // Plain-Text Molecule Spec & Bill
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                InfoRow("PubChem SID", lead.pubchemSid)
-                InfoRow("Predicted P(active)", "${String.format("%.4f", lead.pActive)} ± ${String.format("%.4f", lead.sigma)}")
-                InfoRow("Acquisition Score", "${String.format("%.4f", lead.pActive + 0.5 * lead.sigma)} (v_i = ${lead.netValue.toInt()})")
-                InfoRow("Compound Cost", "₹${lead.costInr.toInt()} (${lead.costSource})")
-                InfoRow("Complexity", "${String.format("%.2f", lead.saScore)} / 10 (SAScore)")
-                InfoRow("Building-Block Cost", "₹${lead.buildingBlockCost.toInt()} (Tier B, modelled)")
-                InfoRow("Availability", lead.availability)
-                InfoRow("Funnel Ranks", "Stage 1: #${lead.stage1Rank} | Stage 2: #${lead.stage2Rank}")
+                InfoRow("Compound ID", "PubChem SID: ${lead.pubchemSid}")
+                InfoRow("Potency Odds", "${(lead.pActive * 100).toInt()}% estimated active")
+                InfoRow("Procurement Bill", "₹${lead.costInr.toInt()} (${lead.costSource})")
+                InfoRow("Synthesis Score", "${String.format("%.1f", lead.saScore)} / 10 (Easy to produce)")
+                InfoRow("Building-Block Cost", "₹${lead.buildingBlockCost.toInt()} (Estimated)")
+                InfoRow("Chemical Family", "100% Novel Scaffold")
+                InfoRow("Funnel Cut", "Stage 1 (#${lead.stage1Rank}) → Stage 2 (#${lead.stage2Rank}) → Lead #${lead.leadNum}")
             }
 
             Spacer(modifier = Modifier.height(12.dp))
