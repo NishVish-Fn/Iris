@@ -35,7 +35,6 @@ import com.parsec.molfunnel.ui.theme.*
 @Composable
 fun LeadsScreen(bundle: AppBundle) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0 = Final 3, 1 = Top-20
-    var isRevealed by remember { mutableStateOf(true) }
 
     val leads = if (selectedTab == 0) bundle.finalLeads else bundle.top20Batch
 
@@ -47,36 +46,19 @@ fun LeadsScreen(bundle: AppBundle) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = if (selectedTab == 0) "Final 3 Leads" else "Top-20 Batch",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontFamily = FontFamily.Serif
-                    )
-                    Text(
-                        text = "Combinatorially chosen by QpiAI Opt HUBO",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                // Reveal Toggle Chip
-                FilterChip(
-                    selected = isRevealed,
-                    onClick = { isRevealed = !isRevealed },
-                    label = { Text(if (isRevealed) "REVEALED" else "HIDDEN") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = InkPrimary,
-                        selectedLabelColor = CardBg
-                    )
+            Column {
+                Text(
+                    text = if (selectedTab == 0) "Final 3 Leads" else "Top-20 Batch",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontFamily = FontFamily.Serif
+                )
+                Text(
+                    text = "Combinatorially chosen by QpiAI Opt HUBO",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Tab Toggle
             Row(
@@ -102,7 +84,6 @@ fun LeadsScreen(bundle: AppBundle) {
         items(leads) { lead ->
             LeadCard(
                 lead = lead,
-                isRevealed = isRevealed,
                 validationPlan = bundle.validationPlan.find { it.pubchemSid == lead.pubchemSid }
             )
         }
@@ -133,7 +114,6 @@ fun TabButton(text: String, selected: Boolean, modifier: Modifier, onClick: () -
 @Composable
 fun LeadCard(
     lead: LeadCompound,
-    isRevealed: Boolean,
     validationPlan: com.parsec.molfunnel.model.ValidationPlanItem?
 ) {
     var expandedPlan by remember { mutableStateOf(false) }
@@ -168,33 +148,18 @@ fun LeadCard(
                     fontFamily = FontFamily.Serif
                 )
 
-                // Activity Status Badge (Image 2 style)
-                if (isRevealed) {
-                    val isHit = lead.trueLabel == 1
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (isHit) HitBadgeBg else NotHitBadgeBg
-                    ) {
-                        Text(
-                            text = if (isHit) "HIT" else "NOT A HIT",
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isHit) HitBadgeText else NotHitBadgeText
-                        )
-                    }
-                } else {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = ChipBg
-                    ) {
-                        Text(
-                            text = "HIDDEN",
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = InkSecondary
-                        )
-                    }
+                // Clean Status Badge
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = HitBadgeBg
+                ) {
+                    Text(
+                        text = if (lead.leadNum <= 3) "FINALIST LEAD" else "TOP CANDIDATE",
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = HitBadgeText
+                    )
                 }
             }
 
