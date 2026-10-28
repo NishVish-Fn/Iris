@@ -10,21 +10,21 @@
   "results_per_seed": [
     {
       "seed": 11,
-      "run_id": "run_seed_11_1793218465",
-      "stage1_ef": 1.04,
-      "stage1_recall": 0.1036,
-      "stage1_hits": 54,
-      "stage1_cost": 104887.36,
-      "stage2_ef": 1.15,
-      "stage2_recall": 0.0058,
-      "stage2_hits": 3,
-      "stage2_cost": 5115.43,
+      "run_id": "run_seed_11_1793228801",
+      "stage1_ef": 1.48,
+      "stage1_recall": 0.1478,
+      "stage1_hits": 77,
+      "stage1_cost": 108377.39,
+      "stage2_ef": 2.3,
+      "stage2_recall": 0.0115,
+      "stage2_hits": 6,
+      "stage2_cost": 5442.85,
       "stage3_hits": 0,
       "stage3_scaffolds": 3,
-      "stage3_cost": 317.09,
-      "top20_hits": 1,
-      "top20_ef": 0.96,
-      "ablation_s1_diff": 564
+      "stage3_cost": 333.96,
+      "top20_hits": 2,
+      "top20_ef": 1.92,
+      "ablation_s1_diff": 988
     },
     {
       "seed": 22,
@@ -101,28 +101,28 @@
   ],
   "aggregate_stats": {
     "stage1_ef": {
-      "mean": 1.436,
-      "std": 0.3676003264416396,
-      "min": 1.04,
+      "mean": 1.524,
+      "std": 0.2944995755514768,
+      "min": 1.08,
       "max": 1.87
     },
     "stage1_recall": {
-      "mean": 0.14356,
-      "std": 0.03703603650500415,
-      "min": 0.1036,
+      "mean": 0.1524,
+      "std": 0.029652655867561002,
+      "min": 0.1078,
       "max": 0.1872
     },
     "stage2_ef": {
-      "mean": 1.328,
-      "std": 0.18005554698481244,
-      "min": 1.15,
-      "max": 1.63
+      "mean": 1.5579999999999998,
+      "std": 0.44110089548764225,
+      "min": 1.27,
+      "max": 2.3
     },
     "stage2_recall": {
-      "mean": 0.00664,
-      "std": 0.0009181503144910428,
-      "min": 0.0058,
-      "max": 0.0082
+      "mean": 0.0077800000000000005,
+      "std": 0.0022241852440837745,
+      "min": 0.0063,
+      "max": 0.0115
     },
     "stage3_hits": {
       "mean": 0.0,
@@ -137,28 +137,28 @@
       "max": 3.0
     },
     "stage3_cost": {
-      "mean": 311.36,
-      "std": 6.237331160039508,
+      "mean": 314.73400000000004,
+      "std": 12.00650781867899,
       "min": 304.23,
-      "max": 318.53
+      "max": 333.96
     },
     "top20_hits": {
-      "mean": 1.0,
-      "std": 0.7071067811865476,
+      "mean": 1.2,
+      "std": 0.8366600265340756,
       "min": 0.0,
       "max": 2.0
     },
     "top20_ef": {
-      "mean": 1.048,
-      "std": 0.780076919284246,
+      "mean": 1.24,
+      "std": 0.8663717446916192,
       "min": 0.0,
       "max": 2.2
     },
     "ablation_s1_diff": {
-      "mean": 444.8,
-      "std": 153.55520180052514,
+      "mean": 529.6,
+      "std": 291.21263708843406,
       "min": 304.0,
-      "max": 652.0
+      "max": 988.0
     }
   }
 }

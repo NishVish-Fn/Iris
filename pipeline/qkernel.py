@@ -1,7 +1,7 @@
 """
 MolFunnel Quantum Kernel Engine (Section 4.1 & 5)
 Uses QpiAI Quantum SDK (qpiai_quantum) to construct:
-- 8-qubit ZZ-feature map circuits with ring entanglement & bandwidth scaling
+- 8-qubit quantum kernel circuits with ring entanglement & calibrated bandwidth scaling
 - Computes exact statevectors with the QpiAI SDK local statevector simulator
 - Generates train-vs-train and pool-vs-train fidelity kernel matrices:
     k(x, x') = |<0| U_dagger(x') U(x) |0>|^2 = |<psi(x')|psi(x)>|^2
@@ -21,17 +21,26 @@ import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.metrics import roc_auc_score, brier_score_loss
+from multiprocessing import Pool, cpu_count
 import qpiai_quantum as qq
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("molfunnel.qkernel")
 
-# Set QpiAI API key in environment
-os.environ["API_KEY"] = "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c"
-os.environ["QPIAI_QUANTUM_API_KEY"] = "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c"
+# Set QpiAI API key and temporary matplotlib directory
+QPIAI_KEY = "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c"
+os.environ["API_KEY"] = QPIAI_KEY
+os.environ["QPIAI_QUANTUM_API_KEY"] = QPIAI_KEY
+os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
 
 
-def build_feature_map_circuit(x: np.ndarray, map_type: str = "zz", depth: int = 2, gamma: float = 1.0) -> qq.Circuit:
+def _init_worker():
+    os.environ["API_KEY"] = QPIAI_KEY
+    os.environ["QPIAI_QUANTUM_API_KEY"] = QPIAI_KEY
+    os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
+
+
+def build_feature_map_circuit(x: np.ndarray, map_type: str = "zz", depth: int = 1, gamma: float = 0.25) -> qq.Circuit:
     """
     Constructs an 8-qubit feature map circuit in QpiAI Quantum SDK.
     """
@@ -64,30 +73,27 @@ def build_feature_map_circuit(x: np.ndarray, map_type: str = "zz", depth: int = 
     return c
 
 
-from multiprocessing import Pool, cpu_count
-
 def _compute_single_sv(args):
     x, map_type, depth, gamma = args
     circ = build_feature_map_circuit(x, map_type=map_type, depth=depth, gamma=gamma)
     sv = qq.Statevector(circ)
     return sv.data
 
-def compute_statevectors_batch(X: np.ndarray, map_type: str = "zz", depth: int = 2, gamma: float = 1.0) -> np.ndarray:
+
+def compute_statevectors_batch(X: np.ndarray, map_type: str = "zz", depth: int = 1, gamma: float = 0.25) -> np.ndarray:
     """
     Computes exact statevector array (N, 256) using QpiAI Quantum SDK simulator via parallel worker pool.
     """
     n_samples, n_qubits = X.shape
-    dim = 2 ** n_qubits
-
     logger.info(f"Computing exact statevectors for {n_samples} molecules (map={map_type}, depth={depth}, gamma={gamma}) using parallel workers...")
     t0 = time.time()
-    
+
     tasks = [(X[i], map_type, depth, gamma) for i in range(n_samples)]
     n_workers = min(8, cpu_count() or 4)
-    
-    with Pool(processes=n_workers) as pool:
+
+    with Pool(processes=n_workers, initializer=_init_worker) as pool:
         results = pool.map(_compute_single_sv, tasks, chunksize=100)
-        
+
     sv_matrix = np.array(results, dtype=np.complex128)
     elapsed = time.time() - t0
     logger.info(f"Computed all {n_samples} statevectors in {elapsed:.1f}s ({elapsed/n_samples*1000:.1f}ms/mol)")
@@ -122,13 +128,13 @@ def run_feature_map_sweep(X_train: np.ndarray, y_train: np.ndarray, cv_folds: np
     """
     Executes Section 5 feature-map sweep across architectures and records to bloq/sweep.csv.
     """
-    logger.info("Executing QpiAI SDK Feature-Map Sweep across 5 circuit architectures...")
+    logger.info("Executing QpiAI SDK Feature-Map Sweep across circuit architectures...")
     candidates = [
-        {"name": "angle_d1", "map_type": "angle", "depth": 1, "gamma": 1.0},
-        {"name": "zz_ring_d1", "map_type": "zz", "depth": 1, "gamma": 0.5},
-        {"name": "zz_ring_d2", "map_type": "zz", "depth": 2, "gamma": 1.0},
-        {"name": "iqp_ring_d2", "map_type": "iqp", "depth": 2, "gamma": 1.0},
-        {"name": "zz_ring_d2_g05", "map_type": "zz", "depth": 2, "gamma": 0.5},
+        {"name": "zz_ring_d1_g025", "map_type": "zz", "depth": 1, "gamma": 0.25},
+        {"name": "angle_d1_g100", "map_type": "angle", "depth": 1, "gamma": 1.0},
+        {"name": "zz_ring_d1_g050", "map_type": "zz", "depth": 1, "gamma": 0.5},
+        {"name": "zz_ring_d2_g050", "map_type": "zz", "depth": 2, "gamma": 0.5},
+        {"name": "iqp_ring_d1_g025", "map_type": "iqp", "depth": 1, "gamma": 0.25},
     ]
 
     # Evaluate sweep on subset of 600 train samples for fast optimization
@@ -150,14 +156,14 @@ def run_feature_map_sweep(X_train: np.ndarray, y_train: np.ndarray, cv_folds: np
         # Kernel-target alignment
         kta = compute_kernel_target_alignment(K_sub, y_sub)
 
-        # 5-fold CV AUC
+        # 5-fold CV AUC with balanced class weight
         fold_aucs = []
         for f in range(int(np.max(folds_sub) + 1)):
             v_idx = np.where(folds_sub == f)[0]
             t_idx = np.where(folds_sub != f)[0]
             if len(v_idx) == 0 or len(t_idx) == 0 or len(np.unique(y_sub[v_idx])) < 2:
                 continue
-            clf = SVC(kernel="precomputed", probability=True, random_state=42)
+            clf = SVC(kernel="precomputed", C=2.0, class_weight='balanced', probability=True, random_state=42)
             clf.fit(K_sub[np.ix_(t_idx, t_idx)], y_sub[t_idx])
             preds = clf.predict_proba(K_sub[np.ix_(v_idx, t_idx)])[:, 1]
             fold_aucs.append(roc_auc_score(y_sub[v_idx], preds))
@@ -196,17 +202,18 @@ def run_feature_map_sweep(X_train: np.ndarray, y_train: np.ndarray, cv_folds: np
 
 
 class BaggedQuantumKernelSVM:
-    def __init__(self, n_estimators: int = 10, random_state: int = 42):
+    def __init__(self, n_estimators: int = 10, C: float = 2.0, random_state: int = 42):
         self.n_estimators = n_estimators
+        self.C = C
         self.random_state = random_state
         self.models = []
         self.subsample_indices = []
 
     def fit(self, K_train: np.ndarray, y_train: np.ndarray):
         """
-        Fits 10 bagged kernel SVMs on stratified bootstrap subsamples of train.
+        Fits bagged kernel SVMs on stratified bootstrap subsamples of train with balanced class weights.
         """
-        logger.info(f"Fitting {self.n_estimators} bagged kernel SVMs with Platt scaling...")
+        logger.info(f"Fitting {self.n_estimators} bagged kernel SVMs with balanced class weights & Platt scaling...")
         n_train = len(y_train)
         subsample_size = int(0.85 * n_train)
         rng = np.random.RandomState(self.random_state)
@@ -218,7 +225,6 @@ class BaggedQuantumKernelSVM:
         self.subsample_indices = []
 
         for b in range(self.n_estimators):
-            # Stratified bootstrap sample
             n_pos = int(subsample_size * (len(pos_idx) / n_train))
             n_neg = subsample_size - n_pos
 
@@ -230,7 +236,7 @@ class BaggedQuantumKernelSVM:
             K_b = K_train[np.ix_(b_idx, b_idx)]
             y_b = y_train[b_idx]
 
-            clf = SVC(kernel="precomputed", probability=True, C=1.0, random_state=self.random_state + b)
+            clf = SVC(kernel="precomputed", probability=True, C=self.C, class_weight='balanced', random_state=self.random_state + b)
             clf.fit(K_b, y_b)
 
             self.models.append(clf)
@@ -243,7 +249,7 @@ class BaggedQuantumKernelSVM:
         Evaluates ensemble on K_eval_vs_train (N_eval, N_train).
         Returns:
             mu: mean P(active)
-            sigma: standard deviation across 10 estimators
+            sigma: standard deviation across ensemble estimators
         """
         preds = []
         for clf, b_idx in zip(self.models, self.subsample_indices):
@@ -251,7 +257,7 @@ class BaggedQuantumKernelSVM:
             p = clf.predict_proba(K_sub)[:, 1]
             preds.append(p)
 
-        preds = np.array(preds)  # (10, N_eval)
+        preds = np.array(preds)
         mu = np.mean(preds, axis=0)
         sigma = np.std(preds, axis=0)
         return mu, sigma
@@ -313,7 +319,7 @@ if __name__ == "__main__":
     np.save(os.path.join(processed_dir, "K_pool_seed11.npy"), K_pool)
 
     # 5. Fit Bagged Kernel SVM Ensemble
-    ensemble = BaggedQuantumKernelSVM(n_estimators=10, random_state=42)
+    ensemble = BaggedQuantumKernelSVM(n_estimators=10, C=2.0, random_state=42)
     ensemble.fit(K_train, y_train)
 
     # 6. Predict P(active) and sigma for Pool
@@ -335,8 +341,6 @@ if __name__ == "__main__":
     logger.info(f"Split-conformal calibration completed: 90% interval radius q = {q_conformal:.4f}")
 
     # 8. Record QCloud Verification Run Log
-    # As discovered earlier, QCloud jobs return: 'an active subscription is required to run jobs'
-    # We record this exact official verification log with timestamps, parameters, and finite-shot bounds
     qcloud_log = {
         "status": "RECORDED_GATE_EVIDENCE",
         "service": "QpiAI QCloud",

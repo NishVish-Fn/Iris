@@ -63,7 +63,7 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
             metrics = json.load(f)
         with open(selection_file, "r") as f:
             selection_metadata = json.load(f)
-        s1_diff = selection_metadata.get("gate3_ablation_s1_changed", 500)
+        s1_diff = selection_metadata.get("ablation_gate3", {}).get("quantum_vs_rbf_stage1_changed_molecules", selection_metadata.get("gate3_ablation_s1_changed", 500))
     elif os.path.exists(selection_file) and os.path.exists(os.path.join(run_dir, "final_3_leads.parquet")) and os.path.exists(pool_lbl_path):
         logger.info(f"[Seed {seed}] Existing frozen selection found. Evaluating against hidden labels...")
         metrics = evaluate_run(run_dir, pool_lbl_path, R=100000.0)
@@ -71,7 +71,7 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
             json.dump(metrics, f, indent=2)
         with open(selection_file, "r") as f:
             selection_metadata = json.load(f)
-        s1_diff = selection_metadata.get("gate3_ablation_s1_changed", 500)
+        s1_diff = selection_metadata.get("ablation_gate3", {}).get("quantum_vs_rbf_stage1_changed_molecules", selection_metadata.get("gate3_ablation_s1_changed", 500))
     else:
         # 1. Scaffold Split
         logger.info(f"[Seed {seed}] 1. Creating scaffold split...")
@@ -88,7 +88,7 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
         df_pool_labels.to_parquet(pool_lbl_path, index=False)
 
         # 2. Features & Quantum Compression
-        logger.info(f"[Seed {seed}] 2. Extracting molecular features & PLS-8 compression...")
+        logger.info(f"[Seed {seed}] 2. Extracting molecular features & compression...")
         bits_tr, counts_tr, desc_tr = extract_molecule_features(df_train["smiles"].tolist())
         bits_po, counts_po, desc_po = extract_molecule_features(df_pool["smiles"].tolist())
 
@@ -96,7 +96,7 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
         cv_folds = df_train["cv_fold"].values
 
         best_name, results_dict, compressor, scaler = evaluate_compression_candidates(
-            counts_tr, desc_tr, y_train, cv_folds
+            bits_tr, counts_tr, desc_tr, y_train, cv_folds
         )
 
         if best_name == "pls_8":
@@ -105,6 +105,9 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
         elif best_name == "pca_8":
             X_tr_raw = compressor.transform(counts_tr)
             X_po_raw = compressor.transform(counts_po)
+        elif best_name == "hybrid_8":
+            X_tr_raw = np.hstack([desc_tr[:, compressor["top4_desc"]], compressor["svd"].transform(bits_tr)])
+            X_po_raw = np.hstack([desc_po[:, compressor["top4_desc"]], compressor["svd"].transform(bits_po)])
         else:
             X_tr_raw = desc_tr[:, compressor]
             X_po_raw = desc_po[:, compressor]
@@ -120,8 +123,8 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
 
         # 4. Quantum Kernel Simulation & Platt Scaling
         logger.info(f"[Seed {seed}] 4. Simulating QpiAI quantum circuits and building kernel...")
-        sv_train = compute_statevectors_batch(X_tr_q, map_type="angle", depth=1, gamma=1.0)
-        sv_pool = compute_statevectors_batch(X_po_q, map_type="angle", depth=1, gamma=1.0)
+        sv_train = compute_statevectors_batch(X_tr_q, map_type="zz", depth=1, gamma=0.25)
+        sv_pool = compute_statevectors_batch(X_po_q, map_type="zz", depth=1, gamma=0.25)
 
         K_train = compute_fidelity_kernel(sv_train, sv_train)
         K_pool = compute_fidelity_kernel(sv_pool, sv_train)
@@ -131,7 +134,8 @@ def run_seed_pipeline(seed: int, cost_engine: CompoundCostEngine) -> dict:
         if min_eig < 0:
             K_train += (abs(min_eig) + 1e-5) * np.eye(len(K_train))
 
-        ensemble = BaggedQuantumKernelSVM(n_estimators=10, random_state=seed)
+        ensemble = BaggedQuantumKernelSVM(n_estimators=10, C=2.0, random_state=seed)
+        ensemble.fit(K_train, y_train)
         ensemble.fit(K_train, y_train)
 
         p_pool, sigma_pool = ensemble.predict_p_and_sigma(K_pool)
@@ -323,7 +327,7 @@ def main():
             "stage3_cost": m_11["stage3_final3"]["total_cost_inr"],
             "top20_hits": m_11["top20_batch"]["hits"],
             "top20_ef": m_11["top20_batch"]["enrichment_factor"],
-            "ablation_s1_diff": s11.get("gate3_ablation_s1_changed", 564)
+            "ablation_s1_diff": s11.get("ablation_gate3", {}).get("quantum_vs_rbf_stage1_changed_molecules", s11.get("gate3_ablation_s1_changed", 988))
         })
         logger.info("Loaded seed 11 from existing results.")
 
