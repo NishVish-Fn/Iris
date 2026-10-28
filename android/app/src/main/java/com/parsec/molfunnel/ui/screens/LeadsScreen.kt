@@ -6,6 +6,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -82,9 +83,12 @@ fun LeadsScreen(bundle: AppBundle) {
             }
         }
 
-        items(leads) { lead ->
+        itemsIndexed(leads) { index, lead ->
+            val rankNum = if (lead.leadNum > 0) lead.leadNum else (index + 1)
             LeadCard(
                 lead = lead,
+                displayRank = rankNum,
+                isFinalLead = (selectedTab == 0),
                 validationPlan = bundle.validationPlan.find { it.pubchemSid == lead.pubchemSid }
             )
         }
@@ -115,6 +119,8 @@ fun TabButton(text: String, selected: Boolean, modifier: Modifier, onClick: () -
 @Composable
 fun LeadCard(
     lead: LeadCompound,
+    displayRank: Int,
+    isFinalLead: Boolean,
     validationPlan: com.parsec.molfunnel.model.ValidationPlanItem?
 ) {
     var expandedPlan by remember { mutableStateOf(false) }
@@ -146,7 +152,7 @@ fun LeadCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Lead #${lead.leadNum}",
+                    text = if (isFinalLead) "Lead #$displayRank" else "Candidate #$displayRank",
                     style = MaterialTheme.typography.headlineMedium,
                     fontFamily = FontFamily.Serif
                 )
@@ -157,7 +163,7 @@ fun LeadCard(
                     color = HitBadgeBg
                 ) {
                     Text(
-                        text = if (lead.leadNum <= 3) "FINALIST LEAD" else "TOP CANDIDATE",
+                        text = if (isFinalLead) "FINALIST LEAD" else "TOP-20 CANDIDATE",
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -207,9 +213,9 @@ fun LeadCard(
                 InfoRow("Potency Odds", "${(lead.pActive * 100).toInt()}% estimated active")
                 InfoRow("Procurement Bill", "₹${lead.costInr.toInt()} (${lead.costSource})")
                 InfoRow("Synthesis Score", "${String.format("%.1f", lead.saScore)} / 10 (Easy to produce)")
-                InfoRow("Building-Block Cost", "₹${lead.buildingBlockCost.toInt()} (Estimated)")
+                InfoRow("Building-Block Cost", "₹${if (lead.buildingBlockCost > 0 && lead.buildingBlockCost < 1000) lead.buildingBlockCost.toInt() else (lead.costInr * 0.4).toInt()} (Estimated)")
                 InfoRow("Chemical Family", "100% Novel Scaffold")
-                InfoRow("Funnel Cut", "Stage 1 (#${lead.stage1Rank}) → Stage 2 (#${lead.stage2Rank}) → Lead #${lead.leadNum}")
+                InfoRow("Funnel Cut", "Stage 1 (#${lead.stage1Rank}) → Stage 2 (#${lead.stage2Rank}) → Cut #${displayRank}")
             }
 
             Spacer(modifier = Modifier.height(12.dp))

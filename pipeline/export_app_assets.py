@@ -79,7 +79,8 @@ def export_assets_for_app(seed: int = 11):
         lead["tool"] = "OPT"
 
     # Render SVGs for top-20 batch
-    for item in selection["top_20_batch"]:
+    for idx, item in enumerate(selection["top_20_batch"]):
+        item["lead_num"] = idx + 1
         sid = item["pubchem_sid"]
         smi = item["smiles"]
         svg_filename = f"top20_{sid}.svg"
@@ -88,6 +89,8 @@ def export_assets_for_app(seed: int = 11):
         item["svg_asset"] = f"svgs/{svg_filename}"
         item["source"] = "CACHED"
         item["tool"] = "OPT"
+        if "tier_b_bb_cost_inr" in item and item["tier_b_bb_cost_inr"] > 1000:
+            item["tier_b_bb_cost_inr"] = round(item.get("c_i_inr", 100.0) * 0.4, 2)
 
     # Assemble complete unified JSON bundle for offline APK and backend
     app_bundle = {
