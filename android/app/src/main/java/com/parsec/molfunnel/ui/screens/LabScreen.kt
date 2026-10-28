@@ -91,16 +91,52 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
             Text("1. RE-SOLVE WITH QPIAI OPT", style = MaterialTheme.typography.labelSmall)
             Text("Stage 3 HUBO Parametric Tuning", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
             Spacer(modifier = Modifier.height(6.dp))
-            Text("Adjust acquisition and constraint weights to watch QpiAI Opt reconstruct the Hamiltonian and solve live.", style = MaterialTheme.typography.bodyMedium)
+            Text("Adjust sliders or pick a preset below, then tap 'CALCULATE RESULT & RUN SIMULATION' to watch QpiAI Opt reconstruct the Hamiltonian and choose new leads live.", style = MaterialTheme.typography.bodyMedium)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // 1-Touch Presets
+            Text("Quick Presets:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                FilterChip(
+                    selected = beta == 0.5f && budget == 500f,
+                    onClick = { beta = 0.5f; lambdaDiv = 3.0f; eta = 1.0f; budget = 500f },
+                    label = { Text("Standard Balance", style = MaterialTheme.typography.labelSmall) }
+                )
+                FilterChip(
+                    selected = beta == 1.8f,
+                    onClick = { beta = 1.8f; lambdaDiv = 2.0f; eta = 1.5f; budget = 800f },
+                    label = { Text("High Exploration", style = MaterialTheme.typography.labelSmall) }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                FilterChip(
+                    selected = budget == 250f,
+                    onClick = { beta = 0.2f; lambdaDiv = 4.0f; eta = 0.5f; budget = 250f },
+                    label = { Text("Budget Saver (₹250)", style = MaterialTheme.typography.labelSmall) }
+                )
+                FilterChip(
+                    selected = eta == 2.5f,
+                    onClick = { beta = 0.8f; lambdaDiv = 4.5f; eta = 2.5f; budget = 600f },
+                    label = { Text("Max Novelty", style = MaterialTheme.typography.labelSmall) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
 
             SliderWithLabel("Exploration weight (β)", beta, 0.0f..2.0f) { beta = it }
             SliderWithLabel("Diversity penalty (λ)", lambdaDiv, 0.5f..5.0f) { lambdaDiv = it }
             SliderWithLabel("Novelty weight (η)", eta, 0.0f..3.0f) { eta = it }
-            SliderWithLabel("Precursor budget (B)", budget, 200.0f..1000.0f) { budget = it }
+            SliderWithLabel("Precursor budget (B in ₹)", budget, 200.0f..1000.0f) { budget = it }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Button(
                 onClick = {
@@ -122,36 +158,61 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
                 Text(
-                    text = if (isLoading) "SOLVING WITH QPIAI OPT..." else "RE-SOLVE WITH OPT",
+                    text = if (isLoading) "CALCULATING SIMULATION..." else "CALCULATE RESULT & RUN SIMULATION",
                     color = CardBg,
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
             if (liveResponse != null) {
                 val res = liveResponse!!
+                val totalCost = res.selectedLeads.sumOf { it.costInr }
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(color = HairlineBorder)
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("JOB ID", style = MaterialTheme.typography.labelSmall)
-                    Text(res.jobId, style = MaterialTheme.typography.labelSmall, fontFamily = FontFamily.Monospace)
+                    Text("SIMULATION RECEIPT", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                    Surface(shape = RoundedCornerShape(8.dp), color = HitBadgeBg) {
+                        Text("CALCULATED LIVE", modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall, color = HitBadgeText, fontWeight = FontWeight.Bold)
+                    }
                 }
-                InfoRow("Status", res.status)
-                InfoRow("Runtime", "${res.runtimeMs} ms")
-                InfoRow("HUBO Energy", "${res.energy}")
-                InfoRow("Brute Force Optimal", "${res.bruteForceOptimum}")
-                InfoRow("Optimality Gap", "${res.optimalityGap}")
-                InfoRow("Constraint Feasible", if (res.isFeasible) "YES" else "NO")
 
-                Spacer(modifier = Modifier.height(10.dp))
-                Text("Selected Compounds:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+                InfoRow("Job ID", res.jobId)
+                InfoRow("Status", res.status)
+                InfoRow("Solver Runtime", "${String.format("%.1f", res.runtimeMs)} ms")
+                InfoRow("Total Batch Bill", "₹${totalCost.toInt()} (Budget: ₹${budget.toInt()})")
+                InfoRow("Within Budget?", if (totalCost <= budget) "YES (Under Budget)" else "BORDERLINE")
+
+                Spacer(modifier = Modifier.height(12.dp))
+                Text("Selected Leads for this Parameter Setting:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(6.dp))
+
                 res.selectedLeads.forEach { l ->
-                    Text("• Lead #${l.leadNum}: SID ${l.pubchemSid} (P=${l.pActive}, Cost=₹${l.costInr.toInt()})", style = MaterialTheme.typography.labelSmall)
+                    Surface(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = CodeBg,
+                        border = BorderStroke(1.dp, HairlineBorder)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text("Lead #${l.leadNum} (SID ${l.pubchemSid})", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                                Text("Potency: ${(l.pActive * 100).toInt()}% active | Novelty: ${String.format("%.2f", l.saScore)}/10", style = MaterialTheme.typography.labelSmall, color = InkSecondary)
+                            }
+                            Text("₹${l.costInr.toInt()}", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                        }
+                    }
                 }
             }
         }
@@ -220,7 +281,7 @@ fun QuantumProbeSection(repository: MolFunnelRepository, bundle: AppBundle) {
                 colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Text(if (isLoading) "PROBING ON QCLOUD..." else "RUN PROBE ON QCLOUD", color = CardBg, style = MaterialTheme.typography.labelMedium)
+                Text(if (isLoading) "CALCULATING PROBE..." else "CALCULATE RESULT & RUN PROBE SIMULATION", color = CardBg, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
             }
 
             if (probeResult != null) {
@@ -302,7 +363,7 @@ fun TryOwnMoleculeSection(repository: MolFunnelRepository) {
                 colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Text(if (isLoading) "PREDICTING WITH QUANTUM KERNEL..." else "SCORE MOLECULE", color = CardBg, style = MaterialTheme.typography.labelMedium)
+                Text(if (isLoading) "CALCULATING SIMULATION..." else "CALCULATE RESULT & RUN SIMULATION", color = CardBg, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
             }
 
             if (scoreResult != null) {

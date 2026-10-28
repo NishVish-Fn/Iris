@@ -19,6 +19,7 @@ import time
 import logging
 from typing import Dict, List, Optional
 import numpy as np
+import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
