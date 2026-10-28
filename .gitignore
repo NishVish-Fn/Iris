@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints
+results/runs/
+data/raw/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+.DS_Store
+Thumbs.db

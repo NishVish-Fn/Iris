@@ -1,0 +1,13 @@
+{
+  "seed": 11,
+  "train_size": 3000,
+  "train_actives": 451,
+  "train_hit_rate": 0.15033333333333335,
+  "train_distinct_scaffolds": 212,
+  "pool_size": 10000,
+  "pool_actives": 521,
+  "pool_hit_rate": 0.0521,
+  "pool_distinct_scaffolds": 3737,
+  "scaffold_overlap_count": 0,
+  "k_folds": 5
+}

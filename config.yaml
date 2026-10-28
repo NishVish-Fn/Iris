@@ -1,0 +1,68 @@
+project:
+  name: "MolFunnel"
+  problem: "QML-04"
+  target: "ALDH1 inhibition"
+  pubchem_aid: 1030
+  dataset_source: "LIT-PCBA"
+
+seeds:
+  default: 11
+  all: [11, 22, 33, 44, 55]
+
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  train_size: 3000
+  train_min_actives: 300
+  pool_size: 10000
+  k_fold_train: 5
+
+features:
+  n_features: 8
+  angle_scale: "pi"  # [0, pi]
+  methods: ["pca", "pls", "rdkit_top8"]
+
+quantum_kernel:
+  n_qubits: 8
+  depth: 2
+  entanglement: "ring"
+  map_type: "zz"
+  gamma: 1.0
+  shots_verification: 1024
+  verification_sample_size: 200
+  anchor_train_size: 50
+  bagging_estimators: 10
+
+funnel:
+  stage1:
+    in: 10000
+    out: 1000
+    max_per_scaffold_cluster: 5
+  stage2:
+    in: 1000
+    pre_trim: 300  # trim if Opt variable limit requires
+    out: 50
+    k: 50
+    lambda_div: 2.0
+  stage3:
+    in: 50
+    out: 3
+    k: 3
+    batch_backup: 20
+    lambda_div: 3.0
+    omega_hubo: 10.0
+    max_per_scaffold: 2
+
+economics:
+  R: 100000.0            # reward per active hit (INR)
+  beta: 0.5              # exploration weight for uncertainty sigma
+  eta: 1.0               # novelty weight
+  mmol_per_test: 0.01    # mmol per assay test (assumption)
+  assay_fee: 50.0        # per-test assay fee (assumption)
+  budget_B: 5000.0       # procurement budget ceiling (INR)
+  currency: "INR"
+  yield_per_step: 0.50   # 50% per step assumption for retrosynthesis routes
+
+bloq:
+  skipped: true
+  reason: "Per user instruction, running comprehensive feature-map sweep in QpiAI Quantum SDK"

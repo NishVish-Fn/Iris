@@ -1,0 +1,13 @@
+{
+  "dataset": "CoPriNet test_set_PC (100k public test set)",
+  "n_compounds_total": 99957,
+  "n_compounds_valid": 99308,
+  "license": "MIT License (oxpig/CoPriNet, Copyright 2022 rsanchezgarc)",
+  "spearman_correlation": 0.5718770627829746,
+  "spearman_p_value": 0.0,
+  "mae_log10_price": 0.0783806627206915,
+  "r2_log10_price": 0.2828000737207804,
+  "output_unit": "USD per standard compound order (calibrated to Mcule catalogue)",
+  "calibration_slope": 0.23486117363007553,
+  "calibration_intercept": 1.0653961171305124
+}

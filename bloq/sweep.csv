@@ -1,0 +1,6 @@
+candidate_name,map_type,depth,gamma,kta,scaffold_cv_auc,runtime_s,qubit_count,entanglement,is_winner
+angle_d1,angle,1,1.0,0.74839,0.9421,10.94,8,ring,True
+zz_ring_d1,zz,1,0.5,0.6143,0.8322,14.05,8,ring,False
+zz_ring_d2,zz,2,1.0,0.15191,0.4788,26.44,8,ring,False
+iqp_ring_d2,iqp,2,1.0,0.15191,0.4788,12.35,8,ring,False
+zz_ring_d2_g05,zz,2,0.5,0.36794,0.7959,12.61,8,ring,False

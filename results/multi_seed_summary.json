@@ -1,0 +1,164 @@
+{
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "n_seeds": 5,
+  "results_per_seed": [
+    {
+      "seed": 11,
+      "run_id": "run_seed_11_1793218465",
+      "stage1_ef": 1.04,
+      "stage1_recall": 0.1036,
+      "stage1_hits": 54,
+      "stage1_cost": 104887.36,
+      "stage2_ef": 1.15,
+      "stage2_recall": 0.0058,
+      "stage2_hits": 3,
+      "stage2_cost": 5115.43,
+      "stage3_hits": 0,
+      "stage3_scaffolds": 3,
+      "stage3_cost": 317.09,
+      "top20_hits": 1,
+      "top20_ef": 0.96,
+      "ablation_s1_diff": 564
+    },
+    {
+      "seed": 22,
+      "run_id": "run_seed_22_1793241692",
+      "stage1_ef": 1.08,
+      "stage1_recall": 0.1078,
+      "stage1_hits": 51,
+      "stage1_cost": 105254.12,
+      "stage2_ef": 1.27,
+      "stage2_recall": 0.0063,
+      "stage2_hits": 3,
+      "stage2_cost": 5183.42,
+      "stage3_hits": 0,
+      "stage3_scaffolds": 3,
+      "stage3_cost": 307.08,
+      "top20_hits": 1,
+      "top20_ef": 1.06,
+      "ablation_s1_diff": 304
+    },
+    {
+      "seed": 33,
+      "run_id": "run_seed_33_1793241808",
+      "stage1_ef": 1.69,
+      "stage1_recall": 0.1694,
+      "stage1_hits": 83,
+      "stage1_cost": 104786.71,
+      "stage2_ef": 1.63,
+      "stage2_recall": 0.0082,
+      "stage2_hits": 4,
+      "stage2_cost": 5172.95,
+      "stage3_hits": 0,
+      "stage3_scaffolds": 3,
+      "stage3_cost": 318.53,
+      "top20_hits": 1,
+      "top20_ef": 1.02,
+      "ablation_s1_diff": 652
+    },
+    {
+      "seed": 44,
+      "run_id": "run_seed_44_1793241928",
+      "stage1_ef": 1.87,
+      "stage1_recall": 0.1872,
+      "stage1_hits": 85,
+      "stage1_cost": 104610.16,
+      "stage2_ef": 1.32,
+      "stage2_recall": 0.0066,
+      "stage2_hits": 3,
+      "stage2_cost": 5179.36,
+      "stage3_hits": 0,
+      "stage3_scaffolds": 3,
+      "stage3_cost": 309.87,
+      "top20_hits": 2,
+      "top20_ef": 2.2,
+      "ablation_s1_diff": 360
+    },
+    {
+      "seed": 55,
+      "run_id": "run_seed_55_1793242049",
+      "stage1_ef": 1.5,
+      "stage1_recall": 0.1498,
+      "stage1_hits": 71,
+      "stage1_cost": 106089.52,
+      "stage2_ef": 1.27,
+      "stage2_recall": 0.0063,
+      "stage2_hits": 3,
+      "stage2_cost": 5206.25,
+      "stage3_hits": 0,
+      "stage3_scaffolds": 3,
+      "stage3_cost": 304.23,
+      "top20_hits": 0,
+      "top20_ef": 0.0,
+      "ablation_s1_diff": 344
+    }
+  ],
+  "aggregate_stats": {
+    "stage1_ef": {
+      "mean": 1.436,
+      "std": 0.3676003264416396,
+      "min": 1.04,
+      "max": 1.87
+    },
+    "stage1_recall": {
+      "mean": 0.14356,
+      "std": 0.03703603650500415,
+      "min": 0.1036,
+      "max": 0.1872
+    },
+    "stage2_ef": {
+      "mean": 1.328,
+      "std": 0.18005554698481244,
+      "min": 1.15,
+      "max": 1.63
+    },
+    "stage2_recall": {
+      "mean": 0.00664,
+      "std": 0.0009181503144910428,
+      "min": 0.0058,
+      "max": 0.0082
+    },
+    "stage3_hits": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "stage3_scaffolds": {
+      "mean": 3.0,
+      "std": 0.0,
+      "min": 3.0,
+      "max": 3.0
+    },
+    "stage3_cost": {
+      "mean": 311.36,
+      "std": 6.237331160039508,
+      "min": 304.23,
+      "max": 318.53
+    },
+    "top20_hits": {
+      "mean": 1.0,
+      "std": 0.7071067811865476,
+      "min": 0.0,
+      "max": 2.0
+    },
+    "top20_ef": {
+      "mean": 1.048,
+      "std": 0.780076919284246,
+      "min": 0.0,
+      "max": 2.2
+    },
+    "ablation_s1_diff": {
+      "mean": 444.8,
+      "std": 153.55520180052514,
+      "min": 304.0,
+      "max": 652.0
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "raw_actives": 7168,
+  "raw_inactives": 137965,
+  "failed_rdkit_actives": 0,
+  "failed_rdkit_inactives": 0,
+  "duplicate_inchikey_actives": 23,
+  "duplicate_inchikey_inactives": 2267,
+  "conflicting_active_and_inactive": 23,
+  "final_clean_actives": 7122,
+  "final_clean_inactives": 135675,
+  "total_unique_molecules": 142797
+}

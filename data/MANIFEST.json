@@ -1,0 +1,22 @@
+{
+  "download_date": "2026-10-29T01:23:14.259640",
+  "source_url": "https://drugdesign.unistra.fr/LIT-PCBA/Files/full_data.tgz",
+  "target": "ALDH1",
+  "pubchem_aid": 1030,
+  "files": {
+    "actives.smi": {
+      "path": "C:\\Users\\creat\\.gemini\\antigravity\\scratch\\molfunnel\\data\\raw\\ALDH1\\actives.smi",
+      "sha256": "7b0e42f1a192566958217859f12f5143c48a61ccfac9194bcd048fa191c01763",
+      "raw_record_count": 7168,
+      "size_bytes": 396924,
+      "sample_line": "CCOc1ccc(NC(=O)CSc2nc3cccnc3n2CCOC)cc1 842161"
+    },
+    "inactives.smi": {
+      "path": "C:\\Users\\creat\\.gemini\\antigravity\\scratch\\molfunnel\\data\\raw\\ALDH1\\inactives.smi",
+      "sha256": "499840c6f08a091db1a5fbb7238ee989117392db1fb37038717d6cf9d558338b",
+      "raw_record_count": 137965,
+      "size_bytes": 7236056,
+      "sample_line": "OC(CC=C)(\\C=C\\c1ccccc1)c2ccccc2 50110758"
+    }
+  }
+}
