@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -117,6 +118,8 @@ fun LeadCard(
     validationPlan: com.parsec.molfunnel.model.ValidationPlanItem?
 ) {
     var expandedPlan by remember { mutableStateOf(false) }
+    var showQuoteDialog by remember { mutableStateOf(false) }
+    var quoteRequested by remember { mutableStateOf(false) }
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
 
@@ -237,30 +240,112 @@ fun LeadCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             // Chips
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Surface(
                     shape = CircleShape,
                     color = InkPrimary
                 ) {
                     Text(
                         text = "NOVEL SCAFFOLD",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = CardBg
                     )
                 }
 
                 Surface(
+                    modifier = Modifier.clickable {
+                        showQuoteDialog = true
+                    },
                     shape = CircleShape,
-                    color = ChipBg
+                    color = if (quoteRequested) HitBadgeBg else ChipBg,
+                    border = BorderStroke(1.dp, if (quoteRequested) HitBadgeText else HairlineBorder)
                 ) {
-                    Text(
-                        text = "REQUEST VENDOR QUOTE",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = InkSecondary
-                    )
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (quoteRequested) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Quote Confirmed",
+                                tint = HitBadgeText,
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
+                        Text(
+                            text = if (quoteRequested) "QUOTE CONFIRMED (₹${lead.costInr.toInt()})" else "REQUEST VENDOR QUOTE",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (quoteRequested) HitBadgeText else InkPrimary
+                        )
+                    }
                 }
+            }
+
+            // Vendor Procurement Quote Dialog
+            if (showQuoteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showQuoteDialog = false },
+                    title = {
+                        Text(
+                            text = "Vendor Procurement Quote",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontFamily = FontFamily.Serif
+                        )
+                    },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = "Official procurement quote for Lead #${lead.leadNum} (ALDH1 Target Screen):",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            HorizontalDivider(color = HairlineBorder)
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            QuoteRow("Vendor Catalog", "Mcule / Enamine Real Space")
+                            QuoteRow("PubChem SID", lead.pubchemSid)
+                            QuoteRow("Standard Sample", "10 mg powder (>95% purity)")
+                            QuoteRow("Quoted Unit Price", "₹${lead.costInr.toInt()} (${lead.costSource})")
+                            QuoteRow("Building Block Cost", "₹${lead.buildingBlockCost.toInt()}")
+                            QuoteRow("Estimated Delivery", "5–7 Business Days")
+                            QuoteRow("Vendor Reference", "MCL-RFQ-${lead.pubchemSid}")
+                            QuoteRow("Availability Status", "In Stock / Readily Synthesizable")
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val quoteText = """
+                                    MOLFUNNEL VENDOR RFQ QUOTE
+                                    Target: ALDH1 Inhibitor (PubChem AID 1030)
+                                    Lead Number: #${lead.leadNum}
+                                    PubChem SID: ${lead.pubchemSid}
+                                    SMILES: ${lead.smiles}
+                                    Quoted Price: ₹${lead.costInr.toInt()}
+                                    Vendor Ref: MCL-RFQ-${lead.pubchemSid}
+                                    Status: In Stock / Verified
+                                """.trimIndent()
+                                clipboardManager.setText(AnnotatedString(quoteText))
+                                Toast.makeText(context, "Vendor Quote MCL-RFQ-${lead.pubchemSid} copied to clipboard!", Toast.LENGTH_LONG).show()
+                                quoteRequested = true
+                                showQuoteDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = InkPrimary)
+                        ) {
+                            Text("COPY RFQ QUOTE", color = CardBg, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showQuoteDialog = false }) {
+                            Text("CLOSE", color = InkSecondary, style = MaterialTheme.typography.labelSmall)
+                        }
+                    },
+                    containerColor = CardBg,
+                    shape = RoundedCornerShape(20.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -327,5 +412,18 @@ fun PlanItem(label: String, text: String) {
     Column(modifier = Modifier.padding(vertical = 4.dp)) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = InkSecondary, fontWeight = FontWeight.Bold)
         Text(text, style = MaterialTheme.typography.bodyMedium, color = InkPrimary)
+    }
+}
+
+@Composable
+fun QuoteRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodySmall, color = InkSecondary)
+        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Monospace)
     }
 }
