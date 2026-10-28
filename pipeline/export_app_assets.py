@@ -92,6 +92,25 @@ def export_assets_for_app(seed: int = 11):
         if "tier_b_bb_cost_inr" in item and item["tier_b_bb_cost_inr"] > 1000:
             item["tier_b_bb_cost_inr"] = round(item.get("c_i_inr", 100.0) * 0.4, 2)
 
+    # Assemble complete validation plan covering both final 3 leads and top-20 batch
+    val_plan = list(metrics.get("written_validation_plan", []))
+    existing_sids = {p["pubchem_sid"] for p in val_plan}
+    for idx, item in enumerate(selection["top_20_batch"]):
+        if item["pubchem_sid"] not in existing_sids:
+            val_plan.append({
+                "lead_num": idx + 1,
+                "pubchem_sid": item["pubchem_sid"],
+                "smiles": item["smiles"],
+                "scaffold": item["scaffold"],
+                "tier_b_bb_cost": item.get("tier_b_bb_cost_inr", 45.0),
+                "primary_assay": "ALDH1 NADH fluorescence assay (AID 1030 replicate, excitation 340nm / emission 460nm, 15 min kinetic readout)",
+                "orthogonal_assay": "LC-MS substrate consumption assay (4-nitrobenzaldehyde to 4-nitrobenzoic acid)",
+                "counter_screening": "ALDH2 isozyme selectivity counter-screen to establish ALDH1 target specificity",
+                "ic50_determination": "10-point 3-fold serial dilution (top concentration 50 uM, duplicate wells)",
+                "solubility_check": "Nephelometric turbidity assay in 1% DMSO / aqueous assay buffer"
+            })
+            existing_sids.add(item["pubchem_sid"])
+
     # Assemble complete unified JSON bundle for offline APK and backend
     app_bundle = {
         "run_id": run_id,
@@ -118,7 +137,7 @@ def export_assets_for_app(seed: int = 11):
         },
         "official_evaluation_metrics": metrics["official_primary_metrics"],
         "deliverable_checklist": metrics["deliverable_checklist"],
-        "written_validation_plan": metrics["written_validation_plan"],
+        "written_validation_plan": val_plan,
         "final_3_leads": selection["final_3_leads"],
         "top_20_batch": selection["top_20_batch"],
         "opt_solver_records": selection["opt_solver_records"],

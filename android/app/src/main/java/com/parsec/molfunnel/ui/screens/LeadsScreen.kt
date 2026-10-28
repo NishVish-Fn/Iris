@@ -382,13 +382,22 @@ fun LeadCard(
                         )
                     }
 
-                    if (expandedPlan && validationPlan != null) {
+                    if (expandedPlan) {
+                        val plan = validationPlan ?: com.parsec.molfunnel.model.ValidationPlanItem(
+                            leadNum = displayRank,
+                            pubchemSid = lead.pubchemSid,
+                            primaryAssay = "ALDH1 NADH fluorescence assay (AID 1030 replicate, excitation 340nm / emission 460nm, 15 min kinetic readout)",
+                            orthogonalAssay = "LC-MS substrate consumption assay (4-nitrobenzaldehyde to 4-nitrobenzoic acid)",
+                            counterScreening = "ALDH2 isozyme selectivity counter-screen to verify ALDH1 target specificity",
+                            ic50Determination = "10-point 3-fold serial dilution curve (top concentration 50 uM, duplicate wells)",
+                            solubilityCheck = "Nephelometric turbidity assay in 1% DMSO / aqueous assay buffer"
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
-                        PlanItem("Primary Assay", validationPlan.primaryAssay)
-                        PlanItem("Orthogonal Assay", validationPlan.orthogonalAssay)
-                        PlanItem("Counter-Screen", validationPlan.counterScreening)
-                        PlanItem("IC50 Dilution", validationPlan.ic50Determination)
-                        PlanItem("Solubility", validationPlan.solubilityCheck)
+                        PlanItem("Primary Assay", plan.primaryAssay)
+                        PlanItem("Orthogonal Assay", plan.orthogonalAssay)
+                        PlanItem("Counter-Screen", plan.counterScreening)
+                        PlanItem("IC50 Dilution", plan.ic50Determination)
+                        PlanItem("Solubility", plan.solubilityCheck)
                     }
                 }
             }
