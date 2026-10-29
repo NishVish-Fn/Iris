@@ -38,6 +38,7 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
             .fillMaxSize()
             .background(CanvasBg)
             .padding(16.dp),
+        contentPadding = PaddingValues(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {

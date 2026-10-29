@@ -10,6 +10,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +27,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -112,7 +115,8 @@ fun MainApp(repository: MolFunnelRepository) {
 
 /**
  * Apple-style liquid glass bottom navigation bar with 100% opaque solid background.
- * Features an animated liquid slider capsule with specular glass gradients and spring physics.
+ * Features an interactive draggable liquid slider capsule with specular glass gradients,
+ * rubber-band squash-and-stretch physics, and fluid spring snapping.
  * Zero opacity or see-through blur so underlying scroll content never bleeds through.
  */
 @Composable
@@ -121,7 +125,6 @@ fun AppleLiquidGlassBottomBar(
     onTabSelected: (NavigationTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 100% Opaque canvas backing - prevents any scroll content from showing through
     Surface(
         color = CanvasBg,
         modifier = modifier.fillMaxWidth()
@@ -184,28 +187,47 @@ fun AppleLiquidGlassBottomBar(
                         .fillMaxSize()
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                 ) {
+                    val density = LocalDensity.current
                     val tabCount = NavigationTab.values().size
                     val tabWidth = maxWidth / tabCount
-                    val selectedIndex = selectedTab.ordinal
-                    val targetOffset = tabWidth * selectedIndex
+                    val tabWidthPx = with(density) { tabWidth.toPx() }
+                    val maxWidthPx = with(density) { maxWidth.toPx() }
 
-                    // Apple bouncy liquid spring animation
-                    val animatedOffset by animateDpAsState(
-                        targetValue = targetOffset,
-                        animationSpec = spring(
-                            dampingRatio = 0.74f, // Organic liquid bounce
-                            stiffness = 380f
-                        ),
-                        label = "liquidSliderOffset"
+                    // Drag state for real interactive finger sliding across tabs
+                    var dragOffsetPx by remember { mutableStateOf<Float?>(null) }
+                    var isDragging by remember { mutableStateOf(false) }
+
+                    val activeIndex = selectedTab.ordinal
+                    val targetPx = dragOffsetPx ?: (activeIndex * tabWidthPx)
+
+                    // Spring animation for smooth Apple liquid glide
+                    val animatedPillPx by animateFloatAsState(
+                        targetValue = targetPx,
+                        animationSpec = if (isDragging) {
+                            spring(dampingRatio = 1f, stiffness = 800f)
+                        } else {
+                            spring(dampingRatio = 0.78f, stiffness = 380f)
+                        },
+                        label = "pillOffset"
                     )
+
+                    // Liquid stretch scale during active motion
+                    val pillScaleX by animateFloatAsState(
+                        targetValue = if (isDragging) 1.05f else 1.0f,
+                        animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
+                        label = "pillScaleX"
+                    )
+
+                    val pillOffsetDp = with(density) { animatedPillPx.toDp() }
 
                     // Liquid Glass Slider Capsule (Solid, 100% Opaque)
                     Box(
                         modifier = Modifier
-                            .offset(x = animatedOffset)
+                            .offset(x = pillOffsetDp)
                             .width(tabWidth)
                             .fillMaxHeight()
                             .padding(horizontal = 2.dp, vertical = 2.dp)
+                            .scale(scaleX = pillScaleX, scaleY = 1.0f)
                             .shadow(
                                 elevation = 6.dp,
                                 shape = RoundedCornerShape(26.dp),
@@ -250,9 +272,39 @@ fun AppleLiquidGlassBottomBar(
                         )
                     }
 
-                    // Foreground Tab Items Row
+                    // Foreground Tab Items Row with both tap & smooth horizontal drag gestures
                     Row(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pointerInput(tabWidthPx, maxWidthPx) {
+                                detectHorizontalDragGestures(
+                                    onDragStart = { offset ->
+                                        isDragging = true
+                                        dragOffsetPx = (offset.x - tabWidthPx / 2f).coerceIn(0f, maxWidthPx - tabWidthPx)
+                                    },
+                                    onDragEnd = {
+                                        isDragging = false
+                                        val finalPx = dragOffsetPx ?: (selectedTab.ordinal * tabWidthPx)
+                                        val targetIdx = ((finalPx + tabWidthPx / 2f) / tabWidthPx).toInt().coerceIn(0, tabCount - 1)
+                                        dragOffsetPx = null
+                                        onTabSelected(NavigationTab.values()[targetIdx])
+                                    },
+                                    onDragCancel = {
+                                        isDragging = false
+                                        dragOffsetPx = null
+                                    },
+                                    onHorizontalDrag = { change, dragAmount ->
+                                        change.consume()
+                                        val current = dragOffsetPx ?: (selectedTab.ordinal * tabWidthPx)
+                                        val next = (current + dragAmount).coerceIn(0f, maxWidthPx - tabWidthPx)
+                                        dragOffsetPx = next
+                                        val liveIdx = ((next + tabWidthPx / 2f) / tabWidthPx).toInt().coerceIn(0, tabCount - 1)
+                                        if (liveIdx != selectedTab.ordinal) {
+                                            onTabSelected(NavigationTab.values()[liveIdx])
+                                        }
+                                    }
+                                )
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         NavigationTab.values().forEach { tab ->
@@ -260,7 +312,7 @@ fun AppleLiquidGlassBottomBar(
 
                             // Dynamic scale animation for active tab icon
                             val iconScale by animateFloatAsState(
-                                targetValue = if (isSelected) 1.12f else 1.0f,
+                                targetValue = if (isSelected) 1.15f else 1.0f,
                                 animationSpec = spring(
                                     dampingRatio = 0.65f,
                                     stiffness = 400f
@@ -307,7 +359,7 @@ fun AppleLiquidGlassBottomBar(
                                     // Apple active micro-pill dot
                                     Box(
                                         modifier = Modifier
-                                            .width(if (isSelected) 10.dp else 0.dp)
+                                            .width(if (isSelected) 12.dp else 0.dp)
                                             .height(2.dp)
                                             .clip(CircleShape)
                                             .background(

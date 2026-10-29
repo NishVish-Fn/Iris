@@ -4,8 +4,10 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,7 +48,8 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(CanvasBg)
-            .padding(16.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 20.dp),
         contentAlignment = Alignment.Center
     ) {
         if (!inWalkthrough) {

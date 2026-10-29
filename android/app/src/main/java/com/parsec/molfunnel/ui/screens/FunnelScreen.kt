@@ -13,7 +13,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -126,6 +130,7 @@ fun FunnelScreen(bundle: AppBundle) {
             .fillMaxSize()
             .background(CanvasBg)
             .padding(16.dp),
+        contentPadding = PaddingValues(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
@@ -313,6 +318,11 @@ fun FunnelScreen(bundle: AppBundle) {
                     )
                 }
             }
+        }
+
+        // Visual Graph: Filtration Yield & Purity Dynamics
+        item {
+            FunnelFiltrationDecayChart()
         }
 
         // Stage 1 Detail Card
@@ -597,4 +607,188 @@ fun StageBillRow(label: String, value: String) {
         )
     }
 }
+
+@Composable
+fun FunnelFiltrationDecayChart() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = CardBg),
+        border = BorderStroke(1.dp, HairlineBorder)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "FILTRATION YIELD & PURITY DYNAMICS",
+                    style = MaterialTheme.typography.labelSmall,
+                    letterSpacing = 1.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = InkSecondary
+                )
+                Surface(
+                    shape = CircleShape,
+                    color = HitBadgeBg
+                ) {
+                    Text(
+                        text = "99.97% LOG TAPER",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = HitBadgeText
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "Screening Decay vs Active Purity",
+                style = MaterialTheme.typography.titleMedium,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Dual-axis projection showing logarithmic library reduction vs active hit enrichment rate",
+                style = MaterialTheme.typography.bodySmall,
+                color = InkSecondary
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Canvas Chart
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+            ) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val w = size.width
+                    val h = size.height
+                    val padL = 40f
+                    val padR = 20f
+                    val padT = 20f
+                    val padB = 30f
+                    val plotW = w - padL - padR
+                    val plotH = h - padT - padB
+
+                    // Horizontal Grid Lines
+                    for (i in 0..3) {
+                        val y = padT + (i / 3f) * plotH
+                        drawLine(
+                            color = HairlineBorder,
+                            start = Offset(padL, y),
+                            end = Offset(padL + plotW, y),
+                            strokeWidth = 1f
+                        )
+                    }
+
+                    // 4 Stage Points along X axis: 0: Pool, 1: Stage 1, 2: Stage 2, 3: Final 3
+                    val xPts = listOf(
+                        padL,
+                        padL + 0.33f * plotW,
+                        padL + 0.66f * plotW,
+                        padL + plotW
+                    )
+
+                    // Curve 1: Logarithmic Count Decay (10k -> 1k -> 50 -> 3)
+                    val decayY = listOf(
+                        padT,                           // 10,000 (top)
+                        padT + 0.25f * plotH,           // 1,000
+                        padT + 0.58f * plotH,           // 50
+                        padT + 0.88f * plotH            // 3
+                    )
+
+                    // Draw volume area under decay curve
+                    val areaPath = Path().apply {
+                        moveTo(xPts[0], padT + plotH)
+                        for (i in 0..3) {
+                            lineTo(xPts[i], decayY[i])
+                        }
+                        lineTo(xPts[3], padT + plotH)
+                        close()
+                    }
+                    drawPath(
+                        areaPath,
+                        brush = Brush.verticalGradient(
+                            listOf(Color(0x25111111), Color(0x04111111)),
+                            startY = padT,
+                            endY = padT + plotH
+                        )
+                    )
+
+                    val decayPath = Path().apply {
+                        moveTo(xPts[0], decayY[0])
+                        for (i in 1..3) {
+                            lineTo(xPts[i], decayY[i])
+                        }
+                    }
+                    drawPath(decayPath, color = InkPrimary, style = Stroke(width = 3f))
+
+                    // Curve 2: Purity / Hit Rate Growth (5.2% -> 7.7% -> 12.0% -> 100%)
+                    val purityY = listOf(
+                        padT + (1f - 0.052f) * plotH,
+                        padT + (1f - 0.077f) * plotH,
+                        padT + (1f - 0.120f) * plotH,
+                        padT + (1f - 0.95f) * plotH
+                    )
+
+                    val purityPath = Path().apply {
+                        moveTo(xPts[0], purityY[0])
+                        for (i in 1..3) {
+                            lineTo(xPts[i], purityY[i])
+                        }
+                    }
+                    drawPath(
+                        purityPath,
+                        color = Color(0xFF2E7D32),
+                        style = Stroke(width = 2.5f)
+                    )
+
+                    // Draw points
+                    for (i in 0..3) {
+                        drawCircle(color = InkPrimary, radius = 5f, center = Offset(xPts[i], decayY[i]))
+                        drawCircle(color = Color(0xFF2E7D32), radius = 4f, center = Offset(xPts[i], purityY[i]))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Non-overlapping clean legend
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.size(10.dp).background(InkPrimary, CircleShape))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Candidate Pool Contraction (10,000 → 3)",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = InkPrimary
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.size(10.dp).background(Color(0xFF2E7D32), CircleShape))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Active Compound Purity (5.2% → 100% Confirmed)",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFF2E7D32)
+                    )
+                }
+            }
+        }
+    }
+}
+
 
