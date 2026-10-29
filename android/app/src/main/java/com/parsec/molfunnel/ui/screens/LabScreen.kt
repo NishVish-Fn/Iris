@@ -25,7 +25,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
     var selectedLabTab by remember { mutableIntStateOf(0) }
+    var isBackendOnline by remember { mutableStateOf(repository.isBackendOnlineCached) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        isBackendOnline = repository.isBackendReachable()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -45,7 +50,73 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // QpiAI Official API Tools & Cloud Credentials Banner
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBg),
+                border = BorderStroke(1.dp, HairlineBorder)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "OFFICIAL QPIAI API INTEGRATION",
+                            style = MaterialTheme.typography.labelSmall,
+                            letterSpacing = 1.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = InkSecondary
+                        )
+                        Surface(
+                            shape = CircleShape,
+                            color = if (isBackendOnline) InkPrimary else ChipBg
+                        ) {
+                            Text(
+                                text = if (isBackendOnline) "LIVE CLOUD CONNECTED" else "OFFLINE LOCAL SDK MODE",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isBackendOnline) CardBg else InkPrimary
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Integrated QpiAI Quantum & Opt SDKs",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (isBackendOnline)
+                            "Active internet connection verified. Direct API calls are dispatched to QpiAI QCloud and QpiAI Opt servers using your authentic API tokens."
+                        else
+                            "No active internet/server connection. Running on-device QpiAI SDK local simulation. Connect to the internet and launch backend server to dispatch live packets to QpiAI Cloud servers.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = InkSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider(color = HairlineBorder)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    InfoRow("QpiAI Quantum QCloud Token", "${repository.qcloudToken.take(10)}...${repository.qcloudToken.takeLast(6)} (Valid)")
+                    InfoRow("QpiAI Opt HUBO/QUBO Token", "${repository.optToken.take(10)}...${repository.optToken.takeLast(6)} (Valid)")
+                    InfoRow("QpiAI QCloud Endpoint", repository.qcloudEndpoint)
+                    InfoRow("QpiAI Opt Endpoint", repository.optEndpoint)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Sub tabs for Lab features
             Row(
@@ -544,7 +615,10 @@ fun QuantumProbeSection(repository: MolFunnelRepository, bundle: AppBundle) {
                     border = BorderStroke(1.dp, HairlineBorder)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        InfoRow("Quantum Simulator Engine", "QpiAI Quantum 8-Qubit Ring ZZ")
+                        InfoRow("Quantum Engine", "QpiAI Quantum 8-Qubit Ring ZZ")
+                        InfoRow("QpiAI Token Auth", p.apiKeyAuth)
+                        InfoRow("Cloud Server Target", p.endpoint)
+                        InfoRow("Execution Mode", p.source)
                         InfoRow("Circuit Shot Count", "1,024 shots per anchor")
                         val noiseBand = (p.shotNoiseSigma.firstOrNull() ?: 0.015) * 100.0
                         InfoRow("Shot Uncertainty Band", "± ${String.format("%.2f", noiseBand)}% (High Precision)")

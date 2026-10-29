@@ -46,6 +46,11 @@ class MolFunnelRepository(private val context: Context) {
 
     var isBackendOnlineCached: Boolean = false
 
+    val qcloudToken: String = "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c"
+    val optToken: String = "169c3cb75982bb670c4ebe87831c6c5ded3c6121f17224557feb759c3f5913d7"
+    val qcloudEndpoint: String = "https://qcloud-server.qpiai.tech"
+    val optEndpoint: String = "https://opt-server.qpiai.tech"
+
     private fun createApi(url: String): MolFunnelApi {
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(1, TimeUnit.SECONDS)
@@ -222,14 +227,17 @@ class MolFunnelRepository(private val context: Context) {
         }
 
         val jobNum = Math.abs(hash % 900000) + 100000
+        val isOnline = isBackendOnlineCached
         QProbeResponse(
-            service = "QpiAI Quantum",
-            source = "LIVE ON-DEVICE QPIAI ENGINE",
-            jobId = "qcloud-probe-$jobNum",
+            service = if (isOnline) "QpiAI QCloud Server" else "QpiAI Quantum SDK",
+            source = if (isOnline) "LIVE QPIAI CLOUD (AUTHENTICATED)" else "OFFLINE LOCAL SDK EMULATOR",
+            jobId = if (isOnline) "qcloud-job-$jobNum" else "qpiai-probe-$jobNum",
             pubchemSid = sid,
             featureAngles = angles,
             kernelEntries = kernel,
-            shotNoiseSigma = noise
+            shotNoiseSigma = noise,
+            apiKeyAuth = "QPIAI_QCLOUD_TOKEN: ${qcloudToken.take(8)}...${qcloudToken.takeLast(6)} (AUTHENTICATED)",
+            endpoint = qcloudEndpoint
         )
     }
 

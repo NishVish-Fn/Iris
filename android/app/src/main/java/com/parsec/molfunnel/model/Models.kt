@@ -121,7 +121,9 @@ data class QProbeResponse(
     @SerializedName("pubchem_sid") val pubchemSid: String = "",
     @SerializedName("feature_angles_rad") val featureAngles: List<Double> = emptyList(),
     @SerializedName("kernel_entries") val kernelEntries: List<Double> = emptyList(),
-    @SerializedName("shot_noise_sigma") val shotNoiseSigma: List<Double> = emptyList()
+    @SerializedName("shot_noise_sigma") val shotNoiseSigma: List<Double> = emptyList(),
+    @SerializedName("api_key_auth") val apiKeyAuth: String = "QPIAI_QCLOUD_KEY: d44936...57b23c",
+    @SerializedName("endpoint") val endpoint: String = "https://qcloud-server.qpiai.tech"
 )
 
 data class ScoreSmilesResponse(

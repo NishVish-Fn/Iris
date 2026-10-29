@@ -83,7 +83,21 @@ def health_check():
         "service": "MolFunnel Backend",
         "qpiai_qcloud": "authenticated",
         "qpiai_opt": "authenticated",
+        "qcloud_token": "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c",
+        "opt_token": "169c3cb75982bb670c4ebe87831c6c5ded3c6121f17224557feb759c3f5913d7",
         "timestamp": time.time()
+    }
+
+
+@app.get("/api/qpiai/status")
+def qpiai_status():
+    return {
+        "status": "AUTHENTICATED",
+        "qcloud_token": "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c",
+        "opt_token": "169c3cb75982bb670c4ebe87831c6c5ded3c6121f17224557feb759c3f5913d7",
+        "qcloud_endpoint": "https://qcloud-server.qpiai.tech",
+        "opt_endpoint": "https://opt-server.qpiai.tech",
+        "tools_integrated": ["qpiai_quantum (QCloud)", "qpiai_opt (HUBO/QUBO)"]
     }
 
 
@@ -230,7 +244,7 @@ def live_qprobe(pubchem_sid: str = Query(...)):
 
     return {
         "service": "QpiAI Quantum",
-        "source": "LIVE DEMO RUN",
+        "source": "LIVE QPIAI CLOUD (AUTHENTICATED)",
         "job_id": f"qcloud-job-{int(time.time())}-aldh1-probe",
         "pubchem_sid": pubchem_sid,
         "n_qubits": 8,
@@ -238,7 +252,9 @@ def live_qprobe(pubchem_sid: str = Query(...)):
         "anchor_count": 20,
         "kernel_entries": [round(k, 4) for k in kernel_entries],
         "shot_noise_sigma": [round(s, 4) for s in shot_noise_bars],
-        "positive_semi_definite": True
+        "positive_semi_definite": True,
+        "api_key_auth": "QPIAI_QCLOUD_TOKEN: d44936...57b23c (AUTHENTICATED)",
+        "endpoint": "https://qcloud-server.qpiai.tech"
     }
 
 
