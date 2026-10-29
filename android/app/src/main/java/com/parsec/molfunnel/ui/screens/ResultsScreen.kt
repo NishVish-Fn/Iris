@@ -833,13 +833,140 @@ fun MultiSeedStabilityChart() {
     }
 }
 
+data class SolverBenchmarkItem(
+    val name: String,
+    val energy: String,
+    val energyFraction: Float,
+    val runtime: String,
+    val runtimeFraction: Float,
+    val gap: String,
+    val isWinner: Boolean
+)
+
 @Composable
 fun OptSolverBenchmarkChart() {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SolverRow("QpiAI Opt (HUBO)", energy = "-1,714,265", runtime = "313 ms", gap = "0.00% (Global Best)", isWinner = true)
-        SolverRow("Brute Force (19.6k pairs)", energy = "-1,714,265", runtime = "15 ms", gap = "0.00% (Matches)", isWinner = false)
-        SolverRow("Simulated Annealing", energy = "-1,665,400", runtime = "420 ms", gap = "+2.85% gap", isWinner = false)
-        SolverRow("Greedy Baseline", energy = "-1,569,700", runtime = "4 ms", gap = "+8.43% gap", isWinner = false)
+    val solvers = listOf(
+        SolverBenchmarkItem("QpiAI Opt (HUBO)", "-1,714,265", 1.000f, "313 ms", 0.70f, "0.00% (Global Best)", true),
+        SolverBenchmarkItem("Brute Force (19.6k)", "-1,714,265", 1.000f, "15 ms", 0.05f, "0.00% (Matches)", false),
+        SolverBenchmarkItem("Simulated Annealing", "-1,665,400", 0.9715f, "420 ms", 0.93f, "+2.85% gap", false),
+        SolverBenchmarkItem("Greedy Baseline", "-1,569,700", 0.9157f, "4 ms", 0.02f, "+8.43% gap", false)
+    )
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // Visual Legend
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LegendItem("Solution Optimality", InkPrimary)
+            LegendItem("Runtime Latency", Color(0xFF2563EB))
+        }
+
+        solvers.forEach { s ->
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                color = if (s.isWinner) CodeBg else Color.Transparent,
+                border = BorderStroke(1.dp, if (s.isWinner) InkPrimary else HairlineBorder)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = s.name,
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = InkPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            shape = CircleShape,
+                            color = if (s.isWinner) HitBadgeBg else ChipBg
+                        ) {
+                            Text(
+                                text = s.gap,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 8.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (s.isWinner) HitBadgeText else InkSecondary,
+                                maxLines = 1
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Bar 1: Energy Optimality Bar
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("QUALITY", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, modifier = Modifier.width(48.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(10.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(5.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(s.energyFraction)
+                                    .fillMaxHeight()
+                                    .background(if (s.isWinner) InkPrimary else Color(0xFF475569), RoundedCornerShape(5.dp))
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${(s.energyFraction * 100).toInt()}% (${s.energy})",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = if (s.isWinner) HitBadgeText else InkPrimary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Bar 2: Runtime Latency Bar
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("RUNTIME", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, modifier = Modifier.width(48.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(6.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(3.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(s.runtimeFraction)
+                                    .fillMaxHeight()
+                                    .background(Color(0xFF2563EB), RoundedCornerShape(3.dp))
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = s.runtime,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = Color(0xFF2563EB),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -869,33 +996,6 @@ fun LegendItem(label: String, color: Color) {
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(label, style = MaterialTheme.typography.labelSmall)
-    }
-}
-
-@Composable
-fun SolverRow(name: String, energy: String, runtime: String, gap: String, isWinner: Boolean) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = if (isWinner) CodeBg else Color.Transparent,
-        border = BorderStroke(1.dp, if (isWinner) InkPrimary else HairlineBorder)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(0.55f)) {
-                Text(name, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                Text("Runtime: $runtime", style = MaterialTheme.typography.labelSmall, color = InkSecondary)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(modifier = Modifier.weight(0.45f), horizontalAlignment = Alignment.End) {
-                Text("Energy: $energy", style = MaterialTheme.typography.labelSmall, fontFamily = FontFamily.Monospace)
-                Text("Gap: $gap", style = MaterialTheme.typography.labelSmall, color = if (isWinner) HitBadgeText else InkSecondary)
-            }
-        }
     }
 }
 
@@ -959,8 +1059,21 @@ fun ClassicalVsQmlModelBenchmark() {
         )
     )
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // Visual Legend
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LegendItem("ROC-AUC", Color(0xFF1E293B))
+            LegendItem("PR-AUC (Novel Scaffolds)", HitBadgeText)
+        }
+
         models.forEach { m ->
+            val rocVal = m.rocAuc.toFloatOrNull() ?: 0.5f
+            val prVal = ((m.prAuc.toFloatOrNull() ?: 0.3f) / 0.75f).coerceIn(0.08f, 1.0f)
+
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -968,6 +1081,7 @@ fun ClassicalVsQmlModelBenchmark() {
                 border = BorderStroke(1.dp, if (m.isOurs) InkPrimary else HairlineBorder)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
+                    // Header
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -987,47 +1101,128 @@ fun ClassicalVsQmlModelBenchmark() {
                             color = if (m.isOurs) HitBadgeBg else ChipBg
                         ) {
                             Text(
-                                text = "AUC: ${m.rocAuc}",
+                                text = if (m.isOurs) "QUANTUM (+16.8%)" else "CLASSICAL",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
-                                fontSize = 10.sp,
+                                fontSize = 8.5.sp,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Bold,
-                                color = if (m.isOurs) HitBadgeText else InkPrimary,
+                                color = if (m.isOurs) HitBadgeText else InkSecondary,
                                 maxLines = 1
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
+                    // Bar 1: ROC-AUC Bar Graph
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(modifier = Modifier.weight(0.33f)) {
-                            Text("PR-AUC", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
-                            Text(m.prAuc, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, maxLines = 1)
+                        Text("ROC-AUC", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, modifier = Modifier.width(48.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(9.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(4.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(rocVal)
+                                    .fillMaxHeight()
+                                    .background(Color(0xFF1E293B), RoundedCornerShape(4.dp))
+                            )
                         }
-                        Column(modifier = Modifier.weight(0.33f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("PAINS CLEAR", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
-                            Text(m.painsClear, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, maxLines = 1)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = m.rocAuc,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1E293B)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    // Bar 2: PR-AUC Bar Graph
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("PR-AUC", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, modifier = Modifier.width(48.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(9.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(4.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(prVal)
+                                    .fillMaxHeight()
+                                    .background(if (m.isOurs) HitBadgeText else Color(0xFF64748B), RoundedCornerShape(4.dp))
+                            )
                         }
-                        Column(modifier = Modifier.weight(0.34f), horizontalAlignment = Alignment.End) {
-                            Text("COST / HIT", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
-                            Text(m.costPerHit, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = if (m.isOurs) HitBadgeText else InkPrimary, maxLines = 1)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = m.prAuc,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = if (m.isOurs) HitBadgeText else InkPrimary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Mini Graphical Gauges Row (PAINS Progress + Cost Badge)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("PAINS CLEAR: ", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, color = InkSecondary, fontWeight = FontWeight.Bold)
+                            val painsFraction = (m.painsClear.replace("%", "").toFloatOrNull() ?: 70f) / 100f
+                            Box(
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(6.dp)
+                                    .background(Color(0xFFE2E8F0), RoundedCornerShape(3.dp))
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(painsFraction)
+                                        .fillMaxHeight()
+                                        .background(if (painsFraction >= 0.95f) HitBadgeText else Color(0xFF64748B), RoundedCornerShape(3.dp))
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(m.painsClear, style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, fontWeight = FontWeight.Bold, color = if (painsFraction >= 0.95f) HitBadgeText else InkPrimary)
+                        }
+
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = if (m.isOurs) HitBadgeBg else ChipBg
+                        ) {
+                            Text(
+                                text = "Cost: ${m.costPerHit} / hit",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 8.5.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = if (m.isOurs) HitBadgeText else InkPrimary
+                            )
                         }
                     }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Conclusion: The QML model out-generalizes classical methods on unseen chemical families by 4.2% ROC-AUC while cutting wet-lab cost per active hit by 53% with 100% PAINS clearance.",
-            style = MaterialTheme.typography.bodySmall,
-            color = InkSecondary
-        )
     }
 }
 
@@ -1188,26 +1383,19 @@ fun BestVsLeastModelsRectangleComparisonSection() {
             }
         }
 
-        // Subtitle explanation for active metric
-        val metricDescription = when (selectedMetricIndex) {
-            0 -> "ROC-AUC: Area under the receiver operating characteristic curve across test scaffolds (0.50 = random, 1.00 = perfect discrimination)."
-            1 -> "PR-AUC: Precision-recall area under imbalanced 5% active prevalence. Measures true hit isolation without false positives."
-            2 -> "Enrichment Factor @ 1%: Hit discovery speed in top 1% vs random screening (1.0x = random baseline)."
-            else -> "Layered Checking Compliance: Rigorous pass rate across all 6 safety and chemical validity criteria (Lipinski, PAINS, Veber, SA, Isozyme, Quantum Purity)."
-        }
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
-            color = CodeBg,
-            border = BorderStroke(1.dp, HairlineBorder)
+        // Visual Scale Axis Bar (Replaces verbose text box with clean graphical axis)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(CodeBg, RoundedCornerShape(8.dp))
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = metricDescription,
-                modifier = Modifier.padding(10.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = InkSecondary
-            )
+            Text("GRAPH SCALE:", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, fontWeight = FontWeight.Bold, color = InkSecondary)
+            Text("◄ 0.0 (Worst)", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, color = InkSecondary)
+            Text("50% (Baseline)", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, color = InkSecondary)
+            Text("100% (Peak) ►", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, fontWeight = FontWeight.Bold, color = HitBadgeText)
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -1287,7 +1475,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // Model Short Name & Metric Value Row (Outside and above bar - zero text overlap!)
+                        // Model Short Name & Metric Value Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
@@ -1314,57 +1502,79 @@ fun BestVsLeastModelsRectangleComparisonSection() {
 
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        // Dedicated Visual Rectangle Bar (Clean graphic area, no text collision!)
+                        // Dedicated Primary Rectangle Graph Bar
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(12.dp)
-                                .background(Color(0xFFF1F5F9), RoundedCornerShape(6.dp))
+                                .height(14.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(7.dp))
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth(barFraction)
                                     .fillMaxHeight()
-                                    .background(barColor, RoundedCornerShape(6.dp))
+                                    .background(barColor, RoundedCornerShape(7.dp))
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                        // Metric sub-row
+                        // Secondary Graphical Multi-Metric Row (Zero Prose Text - 100% Visual Graphs)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "Layered Checks: ${m.layersPassedCount}/6 Passed",
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontSize = 10.sp,
-                                color = if (m.layersPassedCount == 6) HitBadgeText else InkSecondary,
-                                fontWeight = if (m.layersPassedCount == 6) FontWeight.Bold else FontWeight.Normal,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Cost/Hit: ₹${m.costPerHitInr.toInt()}",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace,
-                                color = InkSecondary,
-                                maxLines = 1
-                            )
-                        }
+                            // 6-Layer Segmented Visual Gauge
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("6-LAYERS: ", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, color = InkSecondary, fontWeight = FontWeight.Bold)
+                                for (i in 0 until 6) {
+                                    val passed = i < m.layersPassedCount
+                                    Box(
+                                        modifier = Modifier
+                                            .size(width = 11.dp, height = 6.dp)
+                                            .background(if (passed) HitBadgeText else Color(0xFFCBD5E1), RoundedCornerShape(2.dp))
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                }
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = "${m.layersPassedCount}/6",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (m.layersPassedCount == 6) HitBadgeText else InkSecondary
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = m.whyOutcome,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 10.sp,
-                            color = InkSecondary
-                        )
+                            // Cost-Efficiency Visual Meter
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("COST: ", style = MaterialTheme.typography.labelSmall, fontSize = 8.5.sp, color = InkSecondary, fontWeight = FontWeight.Bold)
+                                val costRatio = (1.0f - (m.costPerHitInr.toFloat() / 7000f)).coerceIn(0.12f, 1.0f)
+                                Box(
+                                    modifier = Modifier
+                                        .width(48.dp)
+                                        .height(6.dp)
+                                        .background(Color(0xFFE2E8F0), RoundedCornerShape(3.dp))
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(costRatio)
+                                            .fillMaxHeight()
+                                            .background(if (m.isBest) HitBadgeText else Color(0xFF64748B), RoundedCornerShape(3.dp))
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "₹${m.costPerHitInr.toInt()}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (m.isBest) HitBadgeText else InkPrimary
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -1372,7 +1582,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 6-LAYER CHECKING VERIFICATION CARD
+        // 6-LAYER CHECKING VERIFICATION GRAPH (Visual Pipeline Step Graph)
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
@@ -1380,48 +1590,88 @@ fun BestVsLeastModelsRectangleComparisonSection() {
             border = BorderStroke(1.dp, InkPrimary)
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
-                Text(
-                    text = "6-Layered Checking Pipeline Status",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Intact multi-tier filter applied across all model evaluations:",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = InkSecondary
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "6-Layer Qualification Pipeline",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Surface(shape = CircleShape, color = HitBadgeBg) {
+                        Text(
+                            text = "6/6 COMPLIANT",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = HitBadgeText
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
 
-                val layerNames = listOf(
-                    "Layer 1: Lipinski Rule-of-5" to "MW <= 500 Da, LogP <= 5.0, HBD <= 5, HBA <= 10 (Oral Permeability)",
-                    "Layer 2: PAINS Alert Filter" to "0 pan-assay interference substructures (No false-positive hits)",
-                    "Layer 3: Veber Bioavailability" to "TPSA <= 140 Å², RotBonds <= 10 (Cell membrane crossing)",
-                    "Layer 4: Synthetic Accessibility" to "SA Score <= 4.0 / 10 (Commercially synthesizable building blocks)",
-                    "Layer 5: Isozyme Specificity" to "> 10x selectivity counter-screen window vs ALDH2 (Low toxicity)",
-                    "Layer 6: Quantum State Purity" to "8-Qubit Ring Bloch Phase mapping & positive semi-definite fidelity"
+                val layerStages = listOf(
+                    "Layer 1: Lipinski Rule-of-5",
+                    "Layer 2: PAINS Alert Clearance",
+                    "Layer 3: Veber Bioavailability",
+                    "Layer 4: Synthetic Accessibility (SA)",
+                    "Layer 5: ALDH1 Isozyme Specificity",
+                    "Layer 6: Quantum Purity & Entanglement"
                 )
 
-                layerNames.forEachIndexed { idx, (title, desc) ->
+                layerStages.forEachIndexed { idx, title ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.Top
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
                             shape = CircleShape,
                             color = HitBadgeBg,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(20.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text("✓", color = HitBadgeText, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                Text("L${idx + 1}", color = HitBadgeText, fontSize = 8.5.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(title, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                            Text(desc, style = MaterialTheme.typography.bodySmall, fontSize = 9.sp, color = InkSecondary)
+                        Text(
+                            text = title,
+                            modifier = Modifier.weight(0.50f),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(0.32f)
+                                .height(8.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(4.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .background(HitBadgeText, RoundedCornerShape(4.dp))
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(shape = CircleShape, color = HitBadgeBg) {
+                            Text(
+                                text = "100%",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = HitBadgeText
+                            )
                         }
                     }
                 }
