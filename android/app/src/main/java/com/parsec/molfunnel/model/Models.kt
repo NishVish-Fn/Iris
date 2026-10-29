@@ -56,6 +56,7 @@ data class LeadCompound(
     @SerializedName("scaffold") val scaffold: String = "",
     @SerializedName("p_active") val pActive: Double = 0.0,
     @SerializedName("sigma") val sigma: Double = 0.0,
+    @SerializedName("novelty") val novelty: Double = 0.0,
     @SerializedName("v_i") val netValue: Double = 0.0,
     @SerializedName("c_i_inr") val costInr: Double = 0.0,
     @SerializedName("sa_score") val saScore: Double = 0.0,

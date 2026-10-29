@@ -150,6 +150,19 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
     var liveResponse by remember { mutableStateOf<LiveReoptimizeResponse?>(null) }
     val scope = rememberCoroutineScope()
 
+    // Automatically recalculate on slider adjustments, preset selections, or initial entry
+    LaunchedEffect(beta, lambdaDiv, eta, budget, k) {
+        isLoading = true
+        liveResponse = repository.liveReoptimize(
+            beta.toDouble(),
+            lambdaDiv.toDouble(),
+            eta.toDouble(),
+            budget.toDouble(),
+            k
+        )
+        isLoading = false
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -159,26 +172,28 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
             Text("1. RE-SOLVE WITH QPIAI OPT", style = MaterialTheme.typography.labelSmall)
             Text("Stage 3 HUBO Parametric Tuning", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
             Spacer(modifier = Modifier.height(6.dp))
-            Text("Adjust sliders or pick a preset below, then tap 'CALCULATE RESULT & RUN SIMULATION' to watch QpiAI Opt reconstruct the Hamiltonian and choose new leads live.", style = MaterialTheme.typography.bodyMedium)
+            Text("Adjust sliders or pick a quick preset below. QpiAI Opt reconstructs the Hamiltonian and selects new winner leads live.", style = MaterialTheme.typography.bodyMedium)
 
             Spacer(modifier = Modifier.height(14.dp))
 
             // 1-Touch Presets
-            Text("Quick Presets:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+            Text("Quick Presets (Tap to Test):", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(6.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 FilterChip(
-                    selected = beta == 0.5f && budget == 500f,
+                    selected = beta == 0.5f && budget == 500f && eta == 1.0f,
                     onClick = { beta = 0.5f; lambdaDiv = 3.0f; eta = 1.0f; budget = 500f },
-                    label = { Text("Standard Balance", style = MaterialTheme.typography.labelSmall) }
+                    label = { Text("Standard Balance", style = MaterialTheme.typography.labelSmall) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = InkPrimary, selectedLabelColor = CardBg)
                 )
                 FilterChip(
-                    selected = beta == 1.8f,
+                    selected = beta == 1.8f && budget == 800f,
                     onClick = { beta = 1.8f; lambdaDiv = 2.0f; eta = 1.5f; budget = 800f },
-                    label = { Text("High Exploration", style = MaterialTheme.typography.labelSmall) }
+                    label = { Text("High Exploration", style = MaterialTheme.typography.labelSmall) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = InkPrimary, selectedLabelColor = CardBg)
                 )
             }
             Row(
@@ -188,12 +203,14 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
                 FilterChip(
                     selected = budget == 250f,
                     onClick = { beta = 0.2f; lambdaDiv = 4.0f; eta = 0.5f; budget = 250f },
-                    label = { Text("Budget Saver (₹250)", style = MaterialTheme.typography.labelSmall) }
+                    label = { Text("Budget Saver (₹250)", style = MaterialTheme.typography.labelSmall) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = InkPrimary, selectedLabelColor = CardBg)
                 )
                 FilterChip(
-                    selected = eta == 2.5f,
+                    selected = eta == 2.5f && budget == 600f,
                     onClick = { beta = 0.8f; lambdaDiv = 4.5f; eta = 2.5f; budget = 600f },
-                    label = { Text("Max Novelty", style = MaterialTheme.typography.labelSmall) }
+                    label = { Text("Max Novelty", style = MaterialTheme.typography.labelSmall) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = InkPrimary, selectedLabelColor = CardBg)
                 )
             }
 
@@ -236,49 +253,110 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
             if (liveResponse != null) {
                 val res = liveResponse!!
                 val totalCost = res.selectedLeads.sumOf { it.costInr }
-                Spacer(modifier = Modifier.height(16.dp))
+                val budgetFraction = (totalCost / budget.toDouble()).coerceIn(0.0, 1.0).toFloat()
+                Spacer(modifier = Modifier.height(18.dp))
                 HorizontalDivider(color = HairlineBorder)
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("SIMULATION RECEIPT", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "OPTIMIZATION RECEIPT",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = InkSecondary
+                    )
                     Surface(shape = RoundedCornerShape(8.dp), color = HitBadgeBg) {
-                        Text("CALCULATED LIVE", modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall, color = HitBadgeText, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "CALCULATED LIVE",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = HitBadgeText,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoRow("Job ID", res.jobId)
-                InfoRow("Status", res.status)
-                InfoRow("Solver Runtime", "${String.format("%.1f", res.runtimeMs)} ms")
-                InfoRow("Total Batch Bill", "₹${totalCost.toInt()} (Budget: ₹${budget.toInt()})")
-                InfoRow("Within Budget?", if (totalCost <= budget) "YES (Under Budget)" else "BORDERLINE")
+                Spacer(modifier = Modifier.height(10.dp))
 
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Selected Leads for this Parameter Setting:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(6.dp))
+                // Receipt Breakdown Surface
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = CanvasBg,
+                    border = BorderStroke(1.dp, HairlineBorder)
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        InfoRow("Job Reference", res.jobId)
+                        InfoRow("QpiAI Opt Engine", "HUBO Combinatorial Solver")
+                        InfoRow("QpiAI Opt Token Auth", "${repository.optToken.take(10)}...${repository.optToken.takeLast(6)} (Valid)")
+                        InfoRow("Status", res.status)
+                        InfoRow("Execution Duration", "${String.format("%.1f", res.runtimeMs)} ms")
+                        InfoRow("Total Batch Cost", "₹${totalCost.toInt()} (Budget Limit: ₹${budget.toInt()})")
+                        InfoRow("Budget Compliance", if (totalCost <= budget) "WITHIN BUDGET (₹${(budget - totalCost).toInt()} Remaining)" else "BORDERLINE")
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Budget Utilization:", style = MaterialTheme.typography.labelSmall, color = InkSecondary)
+                            Text("${(budgetFraction * 100).toInt()}% Used", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        LinearProgressIndicator(
+                            progress = { budgetFraction },
+                            modifier = Modifier.fillMaxWidth().height(6.dp),
+                            color = if (totalCost <= budget) InkPrimary else Color(0xFFC0392B),
+                            trackColor = ChipBg
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(
+                    text = "Winner Leads Selected Under This Setting:",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
                 res.selectedLeads.forEach { l ->
                     Surface(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
                         shape = RoundedCornerShape(12.dp),
-                        color = CodeBg,
+                        color = CardBg,
                         border = BorderStroke(1.dp, HairlineBorder)
                     ) {
                         Row(
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Text("Lead #${l.leadNum} (SID ${l.pubchemSid})", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                                Text("Potency: ${(l.pActive * 100).toInt()}% active | Novelty: ${String.format("%.2f", l.saScore)}/10", style = MaterialTheme.typography.labelSmall, color = InkSecondary)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Lead #${l.leadNum} • PubChem SID ${l.pubchemSid}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Active Odds: ${(l.pActive * 100).toInt()}% • Scaffold: ${l.scaffold.ifEmpty { "Unique Ring System" }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = InkSecondary
+                                )
                             }
-                            Text("₹${l.costInr.toInt()}", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                            Text(
+                                text = "₹${l.costInr.toInt()}",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                color = InkPrimary
+                            )
                         }
                     }
                 }

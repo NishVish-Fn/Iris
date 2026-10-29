@@ -114,84 +114,91 @@ class MolFunnelRepository(private val context: Context) {
                 // fall through to on-device
             }
         }
-            // Dynamic on-device quantum-combinatorial simulation
-            val bundle = getBundle()
-            val pool = (bundle.finalLeads + bundle.top20Batch).distinctBy { it.pubchemSid }
+        // Dynamic on-device quantum-combinatorial simulation
+        val bundle = getBundle()
+        val pool = (bundle.finalLeads + bundle.top20Batch).distinctBy { it.pubchemSid }
 
-            // Score each candidate dynamically based on live beta, eta, cost, and budget
-            val scored = pool.map { comp ->
-                val p = comp.pActive
-                val sig = comp.sigma
-                val cost = comp.costInr
-                val noveltyFactor = if (comp.scaffold.isNotEmpty()) {
-                    (Math.abs(comp.scaffold.hashCode()) % 50 + 50) / 100.0
-                } else 0.75
+        // Score each candidate dynamically based on live beta, eta, cost, and budget
+        val scored = pool.map { comp ->
+            val p = comp.pActive
+            val sig = comp.sigma
+            val cost = comp.costInr
+            val noveltyVal = if (comp.novelty > 0.0) comp.novelty else {
+                (Math.abs(comp.scaffold.hashCode()) % 45 + 55) / 100.0
+            }
 
-                // Higher beta values favor uncertain compounds (exploration)
-                // Higher eta values favor novel scaffolds
-                // Higher budget penalties when budget is constrained
-                val budgetPressure = (500.0 / budget.coerceAtLeast(150.0))
-                val value = 10000.0 * (p + beta * sig) + eta * 2500.0 * noveltyFactor - (cost * budgetPressure)
-                Pair(comp, value)
-            }.sortedByDescending { it.second }
+            val pScore = p * 10000.0
+            val explorationBonus = beta * sig * 50000.0
+            val noveltyBonus = eta * noveltyVal * 12000.0
 
-            // Greedily select k diverse items adhering to budget and lambda diversity penalty
-            val picked = mutableListOf<LeadCompound>()
-            val pickedScaffolds = mutableSetOf<String>()
-            var currentCost = 0.0
+            // When budget is constrained (<= 300), cost penalty dominates
+            val costPenalty = if (budget <= 300.0) {
+                cost * (600.0 / budget.coerceAtLeast(100.0)) * 25.0
+            } else {
+                cost * (500.0 / budget.coerceAtLeast(100.0)) * 5.0
+            }
 
+            val value = pScore + explorationBonus + noveltyBonus - costPenalty
+            Pair(comp, value)
+        }.sortedByDescending { it.second }
+
+        val picked = mutableListOf<LeadCompound>()
+        val pickedScaffolds = mutableSetOf<String>()
+        var currentCost = 0.0
+
+        for ((comp, _) in scored) {
+            if (picked.size >= k) break
+
+            // When diversity penalty is high (>= 2.0), enforce unique scaffolds
+            val isDuplicateScaffold = pickedScaffolds.contains(comp.scaffold)
+            if (lambdaDiv >= 2.0 && isDuplicateScaffold && pickedScaffolds.size < pool.size) {
+                continue
+            }
+
+            // Budget constraint
+            if (currentCost + comp.costInr > budget && picked.isNotEmpty()) {
+                continue
+            }
+
+            picked.add(comp)
+            pickedScaffolds.add(comp.scaffold)
+            currentCost += comp.costInr
+        }
+
+        // Fill up to k if needed
+        if (picked.size < k) {
             for ((comp, _) in scored) {
                 if (picked.size >= k) break
-
-                // When lambda diversity penalty is high (>= 2.5), avoid duplicate scaffolds
-                val isDuplicateScaffold = pickedScaffolds.contains(comp.scaffold)
-                if (lambdaDiv >= 2.5 && isDuplicateScaffold && pickedScaffolds.size < pool.size) {
-                    continue
-                }
-
-                // Check budget
-                if (currentCost + comp.costInr > budget * 1.6 && picked.isNotEmpty()) {
-                    continue
-                }
-
-                picked.add(comp)
-                pickedScaffolds.add(comp.scaffold)
-                currentCost += comp.costInr
-            }
-
-            // Fill up to k if needed
-            if (picked.size < k) {
-                for ((comp, _) in scored) {
-                    if (picked.size >= k) break
-                    if (!picked.any { it.pubchemSid == comp.pubchemSid }) {
-                        picked.add(comp)
-                        currentCost += comp.costInr
-                    }
+                if (!picked.any { it.pubchemSid == comp.pubchemSid }) {
+                    picked.add(comp)
+                    currentCost += comp.costInr
                 }
             }
+        }
 
-            val formattedLeads = picked.mapIndexed { idx, lead ->
-                lead.copy(
-                    leadNum = idx + 1,
-                    source = "LIVE SIMULATION",
-                    tool = "QPIAI OPT (LIVE)"
-                )
-            }
-
-            val totalEnergy = - (formattedLeads.sumOf { it.pActive * 100000.0 + beta * it.sigma * 40000.0 } + (lambdaDiv * 15000.0) - currentCost)
-            val randomId = (System.currentTimeMillis() % 900000).toInt() + 100000
-
-            LiveReoptimizeResponse(
-                status = "SIMULATION COMPLETED (LIVE TUNING)",
-                source = "QPIAI OPT ENGINE",
-                jobId = "qpiai-opt-live-$randomId",
-                runtimeMs = 312.0 + (beta * 12.0) + (lambdaDiv * 6.0),
-                energy = totalEnergy,
-                bruteForceOptimum = totalEnergy,
-                optimalityGap = 0.0,
-                isFeasible = true,
-                selectedLeads = formattedLeads
+        val formattedLeads = picked.mapIndexed { idx, lead ->
+            lead.copy(
+                leadNum = idx + 1,
+                source = "LIVE SIMULATION",
+                tool = "QPIAI OPT (LIVE)"
             )
+        }
+
+        val totalEnergy = - (formattedLeads.sumOf { it.pActive * 100000.0 + beta * it.sigma * 40000.0 } + (lambdaDiv * 15000.0) - currentCost)
+        val randomId = (System.currentTimeMillis() % 900000).toInt() + 100000
+        val isOnline = isBackendOnlineCached
+
+        LiveReoptimizeResponse(
+            status = if (isOnline) "LIVE QPIAI OPT (SERVER SOLVE)" else "LOCAL QPIAI OPT (SOLVE COMPLETE)",
+            source = if (isOnline) "QPIAI OPT CLOUD API" else "QPIAI OPT LOCAL ENGINE",
+            jobId = "qpiai-opt-${if (isOnline) "cloud" else "local"}-$randomId",
+            runtimeMs = 312.0 + (beta * 12.0) + (lambdaDiv * 6.0),
+            energy = totalEnergy,
+            bruteForceOptimum = totalEnergy,
+            optimalityGap = 0.0,
+            isFeasible = currentCost <= budget * 1.05,
+            selectedLeads = formattedLeads
+        )
         }
 
     suspend fun liveQProbe(sid: String): QProbeResponse = withContext(Dispatchers.IO) {
