@@ -66,7 +66,7 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "MOLFUNNEL",
+                        text = "IRIS",
                         style = MaterialTheme.typography.labelMedium,
                         letterSpacing = 3.sp,
                         color = InkSecondary

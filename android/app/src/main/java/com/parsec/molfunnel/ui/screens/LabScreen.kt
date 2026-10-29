@@ -309,7 +309,7 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
                             maxLines = 1
                         )
                         Text(
-                            text = "     MOLFUNNEL PHARMA • PROCUREMENT BILL          ",
+                            text = "        IRIS PHARMA • PROCUREMENT BILL          ",
                             style = MaterialTheme.typography.labelMedium,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
@@ -1212,7 +1212,7 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
                             text = when {
                                 userHits >= 2 -> "You discovered $userHits / 3 confirmed active cures! You matched the Quantum Funnel and crushed the classical 5.2% random baseline!"
                                 userHits == 1 -> "You discovered 1 confirmed active cure! You outperformed classical random screening by 6.4x!"
-                                else -> "0 / 3 active cures found. Drug discovery is difficult without quantum optimization: 94.8% of random molecules fail in wet-lab tests. MolFunnel's 2.3x quantum filter prevents this wasted spend!"
+                                else -> "0 / 3 active cures found. Drug discovery is difficult without quantum optimization: 94.8% of random molecules fail in wet-lab tests. Iris's 2.3x quantum filter prevents this wasted spend!"
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = InkPrimary
@@ -1236,7 +1236,7 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
                         InfoRow("Your Lab Spend", "₹${userCost.toInt()} (Budget: ₹${totalBudget.toInt()})")
                         InfoRow("Your Cost per Active", if (userHits > 0) "₹${(userCost / userHits).toInt()}" else "No hits found")
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = HairlineBorder)
-                        InfoRow("MolFunnel (QpiAI Opt + Quantum)", "2 / 3 Hits (₹167 / hit, 2.3x Boost)")
+                        InfoRow("Iris (QpiAI Opt + Quantum)", "2 / 3 Hits (₹167 / hit, 2.3x Boost)")
                         InfoRow("Classical Random Baseline", "0 / 3 Hits (₹1,920 / hit, 5.2% Rate)")
                     }
                 }

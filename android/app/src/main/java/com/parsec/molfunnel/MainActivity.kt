@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 var showSplash by remember { mutableStateOf(true) }
                 if (showSplash) {
                     AnimatedSplash(
-                        appName = "MolFunnel",
+                        appName = "Iris",
                         tagline = "Quantum drug discovery, filtered.",
                         onFinished = { showSplash = false }
                     )

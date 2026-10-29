@@ -326,7 +326,7 @@ fun LeadCard(
                         Button(
                             onClick = {
                                 val quoteText = """
-                                    MOLFUNNEL VENDOR RFQ QUOTE
+                                    IRIS VENDOR RFQ QUOTE
                                     Target: ALDH1 Inhibitor (PubChem AID 1030)
                                     Lead Number: #${lead.leadNum}
                                     PubChem SID: ${lead.pubchemSid}

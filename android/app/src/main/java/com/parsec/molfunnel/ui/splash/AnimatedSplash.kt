@@ -37,7 +37,7 @@ val SpaceGroteskFontFamily = try {
 
 @Composable
 fun AnimatedSplash(
-    appName: String = "MolFunnel",
+    appName: String = "Iris",
     tagline: String = "Quantum drug discovery, filtered.",
     onFinished: () -> Unit
 ) {

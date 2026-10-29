@@ -434,7 +434,7 @@ fun CostEfficiencyChart() {
         Triple("Random Lab Testing", 1920, Color(0xFFBDBDBD)),
         Triple("Classical RBF Baseline", 1540, Color(0xFF757575)),
         Triple("Stage 1 Shortlist Filter", 1407, Color(0xFF424242)),
-        Triple("MolFunnel QpiAI Stage 2", 907, HitBadgeText)
+        Triple("Iris QpiAI Stage 2", 907, HitBadgeText)
     )
     val maxCost = 2100f
 
@@ -445,7 +445,7 @@ fun CostEfficiencyChart() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(item.first, style = MaterialTheme.typography.labelSmall, fontWeight = if (item.first.contains("MolFunnel")) FontWeight.Bold else FontWeight.Normal)
+                    Text(item.first, style = MaterialTheme.typography.labelSmall, fontWeight = if (item.first.contains("Iris")) FontWeight.Bold else FontWeight.Normal)
                     Text("₹${item.second} / hit", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = item.third, fontFamily = FontFamily.Monospace)
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -458,7 +458,7 @@ fun CostEfficiencyChart() {
                 )
             }
         }
-        Text("MolFunnel Stage 2 slashes cost per active hit by 53% compared to random testing.", style = MaterialTheme.typography.labelSmall, color = InkSecondary)
+        Text("Iris Stage 2 slashes cost per active hit by 53% compared to random testing.", style = MaterialTheme.typography.labelSmall, color = InkSecondary)
     }
 }
 
