@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.model.AppBundle
@@ -430,7 +431,9 @@ fun FunnelMetricBox(
             style = MaterialTheme.typography.labelSmall,
             fontSize = 10.sp,
             letterSpacing = 0.5.sp,
-            color = InkSecondary
+            color = InkSecondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -438,13 +441,17 @@ fun FunnelMetricBox(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif,
-            color = InkPrimary
+            color = InkPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Text(
             text = subtext,
             style = MaterialTheme.typography.bodySmall,
             fontSize = 11.sp,
-            color = InkSecondary
+            color = InkSecondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -627,16 +634,19 @@ fun FunnelFiltrationDecayChart() {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "FILTRATION YIELD & PURITY DYNAMICS",
+                    text = "PURITY DYNAMICS",
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.labelSmall,
                     letterSpacing = 1.sp,
                     fontWeight = FontWeight.Bold,
-                    color = InkSecondary
+                    color = InkSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.width(6.dp))
                 Surface(
                     shape = CircleShape,
                     color = HitBadgeBg
@@ -647,7 +657,8 @@ fun FunnelFiltrationDecayChart() {
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = HitBadgeText
+                        color = HitBadgeText,
+                        maxLines = 1
                     )
                 }
             }

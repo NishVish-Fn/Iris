@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.data.MolFunnelRepository
@@ -131,10 +132,10 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                     .background(ChipBg, CircleShape)
                     .padding(4.dp)
             ) {
-                TabButton(text = "OPT SOLVER", selected = selectedLabTab == 0, modifier = Modifier.weight(1f)) { selectedLabTab = 0 }
+                TabButton(text = "SOLVER", selected = selectedLabTab == 0, modifier = Modifier.weight(1f)) { selectedLabTab = 0 }
                 TabButton(text = "Q-PROBE", selected = selectedLabTab == 1, modifier = Modifier.weight(1f)) { selectedLabTab = 1 }
-                TabButton(text = "GAME", selected = selectedLabTab == 2, modifier = Modifier.weight(0.8f)) { selectedLabTab = 2 }
-                TabButton(text = "MODELS & LAYERS", selected = selectedLabTab == 3, modifier = Modifier.weight(1.3f)) { selectedLabTab = 3 }
+                TabButton(text = "GAME", selected = selectedLabTab == 2, modifier = Modifier.weight(0.85f)) { selectedLabTab = 2 }
+                TabButton(text = "MODELS", selected = selectedLabTab == 3, modifier = Modifier.weight(1.15f)) { selectedLabTab = 3 }
             }
         }
 
@@ -1545,20 +1546,24 @@ fun ModelTestAndLayeredCheckingSection(repository: MolFunnelRepository, bundle: 
                                 Column(modifier = Modifier.weight(1f)) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
                                             text = check.layerName,
+                                            modifier = Modifier.weight(1f),
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(
                                             text = if (check.passed) "PASSED" else "FAILED",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (check.passed) HitBadgeText else NotHitBadgeText
+                                            color = if (check.passed) HitBadgeText else NotHitBadgeText,
+                                            maxLines = 1
                                         )
                                     }
                                     Text(

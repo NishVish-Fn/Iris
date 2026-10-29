@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.model.AppBundle
@@ -389,8 +390,8 @@ fun EnrichmentBarChart() {
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(item.first, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, maxLines = 1)
-                    Text(item.third, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
+                    Text(item.first, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(item.third, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
@@ -733,10 +734,10 @@ fun CostEfficiencyChart() {
 @Composable
 fun ScaffoldDiversityChart() {
     val stages = listOf(
-        Triple("10,000 Pool Baseline", 0.151f, "1,512 / 10,000 (15.1% variety)"),
-        Triple("Stage 1 Shortlist (1,000)", 0.674f, "674 unique families (67.4%)"),
-        Triple("Stage 2 Batch (50 via QUBO)", 0.880f, "44 unique families (88.0%)"),
-        Triple("Final 3 Leads (Stage 3 HUBO)", 1.000f, "3 out of 3 (100% ZERO DUPLICATES)")
+        Triple("10k Pool Baseline", 0.151f, "1,512 / 10k (15.1%)"),
+        Triple("Stage 1 (1k Filter)", 0.674f, "674 unique (67.4%)"),
+        Triple("Stage 2 (50 QUBO)", 0.880f, "44 unique (88.0%)"),
+        Triple("Stage 3 (3 HUBO)", 1.000f, "3/3 (100% Novel)")
     )
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -750,7 +751,9 @@ fun ScaffoldDiversityChart() {
                         text = stage.first,
                         modifier = Modifier.weight(0.55f),
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = if (stage.second == 1.0f) FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (stage.second == 1.0f) FontWeight.Bold else FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -758,7 +761,9 @@ fun ScaffoldDiversityChart() {
                         modifier = Modifier.weight(0.45f),
                         textAlign = TextAlign.End,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (stage.second >= 0.88f) HitBadgeText else InkSecondary
+                        color = if (stage.second >= 0.88f) HitBadgeText else InkSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -969,15 +974,17 @@ fun ClassicalVsQmlModelBenchmark() {
                     ) {
                         Text(
                             text = m.name,
-                            modifier = Modifier.weight(0.65f),
+                            modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = if (m.isOurs) FontWeight.Bold else FontWeight.Medium,
-                            color = if (m.isOurs) InkPrimary else InkSecondary
+                            color = if (m.isOurs) InkPrimary else InkSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Surface(
                             shape = CircleShape,
-                            color = if (m.isOurs) HitBadgeBg else ChipBg,
-                            modifier = Modifier.weight(0.35f)
+                            color = if (m.isOurs) HitBadgeBg else ChipBg
                         ) {
                             Text(
                                 text = "AUC: ${m.rocAuc}",
@@ -986,7 +993,8 @@ fun ClassicalVsQmlModelBenchmark() {
                                 fontSize = 10.sp,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Bold,
-                                color = if (m.isOurs) HitBadgeText else InkPrimary
+                                color = if (m.isOurs) HitBadgeText else InkPrimary,
+                                maxLines = 1
                             )
                         }
                     }
@@ -998,16 +1006,16 @@ fun ClassicalVsQmlModelBenchmark() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(0.33f)) {
-                            Text("PR-AUC", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary)
-                            Text(m.prAuc, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                            Text("PR-AUC", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
+                            Text(m.prAuc, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, maxLines = 1)
                         }
                         Column(modifier = Modifier.weight(0.33f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("PAINS CLEAR", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary)
-                            Text(m.painsClear, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                            Text("PAINS CLEAR", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
+                            Text(m.painsClear, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, maxLines = 1)
                         }
                         Column(modifier = Modifier.weight(0.34f), horizontalAlignment = Alignment.End) {
-                            Text("COST / HIT", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary)
-                            Text(m.costPerHit, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = if (m.isOurs) HitBadgeText else InkPrimary)
+                            Text("COST / HIT", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = InkSecondary, maxLines = 1)
+                            Text(m.costPerHit, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = if (m.isOurs) HitBadgeText else InkPrimary, maxLines = 1)
                         }
                     }
                 }
@@ -1073,7 +1081,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                 modelId = "classical_rf",
                 name = "Tuned Random Forest / LightGBM (ECFP4)",
                 shortName = "Best Classical",
-                category = "BEST CLASSICAL",
+                category = "BEST ML",
                 rocAuc = 0.9944,
                 prAuc = 0.5840,
                 ef1Pct = 6.2,
@@ -1089,7 +1097,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                 modelId = "qml_vqc",
                 name = "Variational Quantum Classifier (VQC RealAmplitudes)",
                 shortName = "Least QML (VQC)",
-                category = "LEAST SUCCESSFUL QML",
+                category = "LEAST QML",
                 rocAuc = 0.7890,
                 prAuc = 0.5600,
                 ef1Pct = 4.2,
@@ -1105,7 +1113,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                 modelId = "qml_angle",
                 name = "Angle Feature Map QML (Zero Entanglement)",
                 shortName = "Least QML (Angle)",
-                category = "LEAST SUCCESSFUL QML",
+                category = "LEAST QML",
                 rocAuc = 0.6940,
                 prAuc = 0.5120,
                 ef1Pct = 3.1,
@@ -1121,7 +1129,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                 modelId = "classical_naive_bayes",
                 name = "Gaussian Naive Bayes / Linear SVM",
                 shortName = "Least Classical (NB)",
-                category = "LEAST SUCCESSFUL CLASSICAL",
+                category = "LEAST ML",
                 rocAuc = 0.6850,
                 prAuc = 0.4900,
                 ef1Pct = 3.2,
@@ -1245,42 +1253,73 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                     border = BorderStroke(1.dp, if (m.isBest) InkPrimary else HairlineBorder)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
+                        // Model Name & Category Badge Header
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = m.name,
-                                modifier = Modifier.weight(0.68f),
+                                modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (m.isBest) FontWeight.Bold else FontWeight.Medium,
-                                color = InkPrimary
+                                color = InkPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
+                            Spacer(modifier = Modifier.width(6.dp))
                             Surface(
                                 shape = CircleShape,
-                                color = tagColor,
-                                modifier = Modifier.weight(0.32f)
+                                color = tagColor
                             ) {
                                 Text(
                                     text = m.category,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 8.sp,
+                                    fontSize = 8.5.sp,
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Bold,
-                                    color = tagTextColor
+                                    color = tagTextColor,
+                                    maxLines = 1
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                        // Visual Rectangle Bar
+                        // Model Short Name & Metric Value Row (Outside and above bar - zero text overlap!)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = m.shortName,
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = InkPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "${displayData.formatted} ${displayData.unit}",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = if (m.isBest) HitBadgeText else InkPrimary,
+                                maxLines = 1
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        // Dedicated Visual Rectangle Bar (Clean graphic area, no text collision!)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(26.dp)
-                                .background(Color(0xFFF1F1F1), RoundedCornerShape(6.dp))
+                                .height(12.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(6.dp))
                         ) {
                             Box(
                                 modifier = Modifier
@@ -1288,51 +1327,34 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                                     .fillMaxHeight()
                                     .background(barColor, RoundedCornerShape(6.dp))
                             )
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = m.shortName,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (barFraction > 0.45f) Color.White else InkPrimary
-                                )
-                                Text(
-                                    text = "${displayData.formatted} ${displayData.unit}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 11.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (barFraction > 0.70f) Color.White else InkPrimary
-                                )
-                            }
                         }
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         // Metric sub-row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "Layered Checks: ${m.layersPassedCount}/6 Passed",
+                                modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 color = if (m.layersPassedCount == 6) HitBadgeText else InkSecondary,
-                                fontWeight = if (m.layersPassedCount == 6) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (m.layersPassedCount == 6) FontWeight.Bold else FontWeight.Normal,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "Cost/Hit: ₹${m.costPerHitInr.toInt()}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 fontFamily = FontFamily.Monospace,
-                                color = InkSecondary
+                                color = InkSecondary,
+                                maxLines = 1
                             )
                         }
 
