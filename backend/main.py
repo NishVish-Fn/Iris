@@ -78,23 +78,27 @@ class SmilesScoreRequest(BaseModel):
 
 @app.get("/health")
 def health_check():
+    qcloud_tok = os.environ.get("QPIAI_QCLOUD_API_TOKEN", "")
+    opt_tok = os.environ.get("QPIAI_OPT_API_TOKEN", "")
     return {
         "status": "healthy",
         "service": "MolFunnel Backend",
-        "qpiai_qcloud": "authenticated",
-        "qpiai_opt": "authenticated",
-        "qcloud_token": "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c",
-        "opt_token": "169c3cb75982bb670c4ebe87831c6c5ded3c6121f17224557feb759c3f5913d7",
+        "qpiai_qcloud": "authenticated" if qcloud_tok else "offline",
+        "qpiai_opt": "authenticated" if opt_tok else "offline",
+        "qcloud_token": f"{qcloud_tok[:8]}...{qcloud_tok[-6:]}" if len(qcloud_tok) > 14 else "masked_token",
+        "opt_token": f"{opt_tok[:8]}...{opt_tok[-6:]}" if len(opt_tok) > 14 else "masked_token",
         "timestamp": time.time()
     }
 
 
 @app.get("/api/qpiai/status")
 def qpiai_status():
+    qcloud_tok = os.environ.get("QPIAI_QCLOUD_API_TOKEN", "")
+    opt_tok = os.environ.get("QPIAI_OPT_API_TOKEN", "")
     return {
         "status": "AUTHENTICATED",
-        "qcloud_token": "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c",
-        "opt_token": "169c3cb75982bb670c4ebe87831c6c5ded3c6121f17224557feb759c3f5913d7",
+        "qcloud_token": f"{qcloud_tok[:8]}...{qcloud_tok[-6:]}" if len(qcloud_tok) > 14 else "masked_token",
+        "opt_token": f"{opt_tok[:8]}...{opt_tok[-6:]}" if len(opt_tok) > 14 else "masked_token",
         "qcloud_endpoint": "https://qcloud-server.qpiai.tech",
         "opt_endpoint": "https://opt-server.qpiai.tech",
         "tools_integrated": ["qpiai_quantum (QCloud)", "qpiai_opt (HUBO/QUBO)"]

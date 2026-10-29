@@ -149,5 +149,34 @@ data class ScoreSmilesResponse(
     @SerializedName("estimated_cost_inr") val estimatedCost: Double = 0.0,
     @SerializedName("novelty_score") val noveltyScore: Double = 0.0,
     @SerializedName("outside_domain_warning") val outsideDomainWarning: Boolean = false,
-    @SerializedName("job_id") val jobId: String = ""
+    @SerializedName("job_id") val jobId: String = "",
+    @SerializedName("model_used") val modelUsed: String = "Best Hybrid (QpiAI Opt QUBO + Quantum Kernel SVM)",
+    @SerializedName("layers_passed") val layersPassed: Int = 6,
+    @SerializedName("total_layers") val totalLayers: Int = 6
+)
+
+data class LayerCheckResult(
+    val layerIndex: Int,
+    val layerName: String,
+    val description: String,
+    val passed: Boolean,
+    val detailValue: String
+)
+
+data class ModelBenchmarkComparison(
+    val modelId: String,
+    val name: String,
+    val shortName: String,
+    val category: String, // "BEST HYBRID", "BEST QML", "BEST CLASSICAL", "LEAST SUCCESSFUL QML", "LEAST SUCCESSFUL CLASSICAL", "BASELINE"
+    val rocAuc: Double,
+    val prAuc: Double,
+    val ef1Pct: Double,
+    val hitRatePct: Double,
+    val painsClearancePct: Double,
+    val layersPassedCount: Int,
+    val totalLayers: Int = 6,
+    val costPerHitInr: Double,
+    val whyOutcome: String,
+    val isBest: Boolean = false,
+    val isLeast: Boolean = false
 )

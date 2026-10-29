@@ -20,6 +20,8 @@ import com.parsec.molfunnel.data.MolFunnelRepository
 import com.parsec.molfunnel.model.AppBundle
 import com.parsec.molfunnel.model.LiveReoptimizeResponse
 import com.parsec.molfunnel.model.QProbeResponse
+import com.parsec.molfunnel.model.ScoreSmilesResponse
+import com.parsec.molfunnel.model.LayerCheckResult
 import com.parsec.molfunnel.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -131,7 +133,8 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
             ) {
                 TabButton(text = "OPT SOLVER", selected = selectedLabTab == 0, modifier = Modifier.weight(1f)) { selectedLabTab = 0 }
                 TabButton(text = "Q-PROBE", selected = selectedLabTab == 1, modifier = Modifier.weight(1f)) { selectedLabTab = 1 }
-                TabButton(text = "SCREENER GAME", selected = selectedLabTab == 2, modifier = Modifier.weight(1f)) { selectedLabTab = 2 }
+                TabButton(text = "GAME", selected = selectedLabTab == 2, modifier = Modifier.weight(0.8f)) { selectedLabTab = 2 }
+                TabButton(text = "MODELS & LAYERS", selected = selectedLabTab == 3, modifier = Modifier.weight(1.3f)) { selectedLabTab = 3 }
             }
         }
 
@@ -139,6 +142,7 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
             0 -> item { ReSolveWithOptSection(repository, bundle) }
             1 -> item { QuantumProbeSection(repository, bundle) }
             2 -> item { BeTheScreenerGameSection(bundle) }
+            3 -> item { ModelTestAndLayeredCheckingSection(repository, bundle) }
         }
     }
 }
@@ -1331,6 +1335,247 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
                                 )
                             }
                             Text(c.bioActivitySummary, style = MaterialTheme.typography.bodySmall, fontSize = 11.sp, color = InkSecondary)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ModelTestAndLayeredCheckingSection(repository: MolFunnelRepository, bundle: AppBundle) {
+    val modelOptions = listOf(
+        Pair("hybrid_qubo_qml", "Best Hybrid (QUBO + QML Kernel)"),
+        Pair("qml_zz_kernel", "Best Pure QML (ZZ-Ring Kernel SVM)"),
+        Pair("classical_rf", "Best Classical (Random Forest / LightGBM)"),
+        Pair("qml_vqc", "Least QML (VQC RealAmplitudes QNN)"),
+        Pair("qml_angle", "Least QML (Angle Map - Unentangled)"),
+        Pair("classical_naive_bayes", "Least Classical (Gaussian Naive Bayes)")
+    )
+
+    var selectedModelId by remember { mutableStateOf("hybrid_qubo_qml") }
+    val candidateSmiles = listOf(
+        Pair("Lead #1 (Thiazole Active)", bundle.finalLeads.getOrNull(0)?.smiles ?: "COC1=CC=C(C=C1)C2=NC(=CS2)C3=CC=C(C=C3)NC(=O)C4=CC=C(C=C4)F"),
+        Pair("Lead #2 (Sulfonamide Active)", bundle.finalLeads.getOrNull(1)?.smiles ?: "CC1=CC=C(C=C1)NC(=O)C2=CC=C(C=C2)S(=O)(=O)N3CCN(CC3)C4=CC=CC=C4"),
+        Pair("Lead #3 (Urea Core Active)", bundle.finalLeads.getOrNull(2)?.smiles ?: "C1CCN(CC1)C(=O)C2=CC3=C(C=C2)NC(=O)N3C4=CC=CC=C4"),
+        Pair("Decoy (PAINS Reactive Trigger)", "CC(=O)C=CC1=CC=CC=C1")
+    )
+
+    var smilesInput by remember { mutableStateOf(candidateSmiles.first().second) }
+    var scoreResponse by remember { mutableStateOf<ScoreSmilesResponse?>(null) }
+    var layerResults by remember { mutableStateOf<List<LayerCheckResult>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = CardBg)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text("4. MODEL INFERENCE & 6-LAYER CHECK", style = MaterialTheme.typography.labelSmall)
+            Text("Evaluate Candidate Compounds", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                "Run chemical SMILES through any benchmarked QML or Classical model while keeping the 6-layer qualification pipeline 100% active.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Model Selection Chips
+            Text("Select AI/Quantum Model:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                modelOptions.forEach { (id, label) ->
+                    FilterChip(
+                        selected = selectedModelId == id,
+                        onClick = { selectedModelId = id },
+                        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = InkPrimary,
+                            selectedLabelColor = CardBg
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Candidate Preset Chips
+            Text("Select Preset Molecule or Paste SMILES:", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                candidateSmiles.forEach { (label, smi) ->
+                    FilterChip(
+                        selected = smilesInput == smi,
+                        onClick = { smilesInput = smi },
+                        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = InkPrimary,
+                            selectedLabelColor = CardBg
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = smilesInput,
+                onValueChange = { smilesInput = it },
+                label = { Text("Candidate SMILES String") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = false,
+                maxLines = 3,
+                textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace)
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Button(
+                onClick = {
+                    isLoading = true
+                    scope.launch {
+                        scoreResponse = repository.liveScoreSmiles(smilesInput, selectedModelId)
+                        layerResults = repository.evaluateLayeredChecks(smilesInput)
+                        isLoading = false
+                    }
+                },
+                enabled = !isLoading,
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            ) {
+                Text(
+                    text = if (isLoading) "RUNNING MODEL & CHECKING LAYERS..." else "RUN INFERENCE & 6-LAYER CHECK",
+                    color = CardBg,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            if (scoreResponse != null) {
+                val res = scoreResponse!!
+                Spacer(modifier = Modifier.height(18.dp))
+                HorizontalDivider(color = HairlineBorder)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Model Inference Summary Card
+                Text(
+                    text = "Model Prediction Summary",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontFamily = FontFamily.Serif,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = CanvasBg,
+                    border = BorderStroke(1.dp, HairlineBorder)
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        InfoRow("Active Model", res.modelUsed)
+                        InfoRow("Predicted P(Active)", "${String.format("%.1f", res.pActive * 100)}% (Uncertainty ± ${String.format("%.2f", res.sigma * 100)}%)")
+                        InfoRow("Chemical Novelty", "${String.format("%.1f", res.noveltyScore * 100)}% (Scaffold Diversity)")
+                        InfoRow("Estimated Precursor Cost", "₹${res.estimatedCost.toInt()} (Tier-B Building Blocks)")
+                        InfoRow("Applicability Domain", if (res.outsideDomainWarning) "Outside Domain (Warning)" else "Within Target Pharmacophore")
+                        InfoRow("Layered Qualification Status", "${layerResults.count { it.passed }} / 6 Criteria Cleared")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // The 6-Layered Checking Card
+                Text(
+                    text = "6-Layered Checking Pipeline Status",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontFamily = FontFamily.Serif,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Multi-tier qualification screening applied to the compound:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = InkSecondary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    layerResults.forEach { check ->
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            color = CardBg,
+                            border = BorderStroke(1.dp, if (check.passed) HairlineBorder else Color(0xFFEF4444))
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = if (check.passed) HitBadgeBg else NotHitBadgeBg,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = if (check.passed) "✓" else "✕",
+                                            color = if (check.passed) HitBadgeText else NotHitBadgeText,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = check.layerName,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = if (check.passed) "PASSED" else "FAILED",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (check.passed) HitBadgeText else NotHitBadgeText
+                                        )
+                                    }
+                                    Text(
+                                        text = check.detailValue,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontSize = 10.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = InkPrimary
+                                    )
+                                    Text(
+                                        text = check.description,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontSize = 9.sp,
+                                        color = InkSecondary
+                                    )
+                                }
+                            }
                         }
                     }
                 }
