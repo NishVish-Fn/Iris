@@ -1,0 +1,42 @@
+{
+  "psd_check": {
+    "min_eigenvalue": -4.144711014245632e-15,
+    "is_positive_semidefinite": true
+  },
+  "effective_dimension": {
+    "quantum_fidelity_kernel": 3.18,
+    "classical_rbf_kernel": 4.8,
+    "capacity_gain": 0.66
+  },
+  "geometric_difference": {
+    "g_quantum_vs_classical": 1.228,
+    "interpretation": "Substantial geometric separation indicates quantum kernel maps to orthogonal Hilbert subspace"
+  },
+  "concentration_scaling": {
+    "4": {
+      "qubits": 4,
+      "variance_offdiag": 0.287175,
+      "statevector_memory_mb": 0.0002
+    },
+    "6": {
+      "qubits": 6,
+      "variance_offdiag": 0.153893,
+      "statevector_memory_mb": 0.001
+    },
+    "8": {
+      "qubits": 8,
+      "variance_offdiag": 0.082469,
+      "statevector_memory_mb": 0.0039
+    },
+    "10": {
+      "qubits": 10,
+      "variance_offdiag": 0.044194,
+      "statevector_memory_mb": 0.0156
+    },
+    "12": {
+      "qubits": 12,
+      "variance_offdiag": 0.023683,
+      "statevector_memory_mb": 0.0625
+    }
+  }
+}

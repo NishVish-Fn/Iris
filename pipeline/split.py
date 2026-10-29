@@ -128,7 +128,7 @@ def create_scaffold_split(
 
 
 if __name__ == "__main__":
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
+    processed_dir = r".\data\processed"
     clean_path = os.path.join(processed_dir, "aldh1_clean.parquet")
     if os.path.exists(clean_path):
         df_clean = pd.read_parquet(clean_path)

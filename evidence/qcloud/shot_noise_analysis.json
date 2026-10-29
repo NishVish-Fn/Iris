@@ -1,0 +1,38 @@
+{
+  "formula": "|<psi(x)|psi(x')>|^2",
+  "exact_fidelity": 0.9734610843831827,
+  "n_qubits": 8,
+  "gate_depth": 2,
+  "shots_experiments": {
+    "256": {
+      "shots": 256,
+      "n_replicates": 500,
+      "mean_estimate": 0.9735390625,
+      "empirical_mae": 0.008343791238056422,
+      "empirical_std": 0.010248174737445626,
+      "theoretical_std_bound": 0.010045716121868806,
+      "bound_satisfied": true,
+      "ratio_empirical_to_theory": 1.0201537265358396
+    },
+    "1024": {
+      "shots": 1024,
+      "n_replicates": 500,
+      "mean_estimate": 0.97372265625,
+      "empirical_mae": 0.003909386861419886,
+      "empirical_std": 0.004877295320518811,
+      "theoretical_std_bound": 0.005022858060934403,
+      "bound_satisfied": true,
+      "ratio_empirical_to_theory": 0.971019937523675
+    },
+    "8192": {
+      "shots": 8192,
+      "n_replicates": 500,
+      "mean_estimate": 0.973485107421875,
+      "empirical_mae": 0.0014235261527322312,
+      "empirical_std": 0.001816354976463615,
+      "theoretical_std_bound": 0.0017758484979121148,
+      "bound_satisfied": true,
+      "ratio_empirical_to_theory": 1.0228096476693391
+    }
+  }
+}

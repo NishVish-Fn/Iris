@@ -23,9 +23,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from pipeline.qubo import (
     compute_novelty,
     stage1_filter,
-    solve_qubo_qpiai_opt,
+    solve_qubo_qpiai_opt_core,
+    solve_qubo_qpiai_opt_hierarchical_300,
     solve_hubo_qpiai_opt,
-    brute_force_stage3_hubo
+    brute_force_stage3_hubo,
+    greedy_qubo,
+    simulated_annealing_qubo
 )
 from pipeline.models_classical import compute_tanimoto_kernel
 
@@ -76,8 +79,8 @@ def simulated_annealing_qubo(v_sub: np.ndarray, S_sim: np.ndarray, k: int, lambd
 
 
 def run_pipeline_funnel(seed: int = 11, R: float = 100000.0, beta: float = 0.5, eta: float = 1.0):
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
-    runs_dir = os.path.join(r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results\runs", f"seed{seed}")
+    processed_dir = r".\data\processed"
+    runs_dir = os.path.join(r".\results\runs", f"seed{seed}")
     os.makedirs(runs_dir, exist_ok=True)
 
     # 1. Load data
@@ -117,27 +120,30 @@ def run_pipeline_funnel(seed: int = 11, R: float = 100000.0, beta: float = 0.5, 
     # 3. Stage 1: 10,000 -> 1,000 (Classical Ranking with Scaffold Cap)
     s1_idx, df_s1 = stage1_filter(df_full, v_i, n_out=1000, max_per_scaffold=5)
 
-    # 4. Stage 2: 1,000 -> 50 (QpiAI Opt QUBO)
-    # Pre-trim to top 75 by v_i to comply with QpiAI Opt term and annealing work limits
-    logger.info("Preparing Stage 2 QUBO on survivors (top 75 candidates -> select 50)...")
-    s1_sorted_sub = df_s1.iloc[:75].copy().reset_index(drop=True)
-    bits_s2_sub = bits_po[df_s1["original_index"].values[:75]]
+    # 4. Stage 2: 1,000 -> 300 pre-trim -> 50 (QpiAI Opt QUBO with INR budget constraint)
+    pre_trim_n = min(300, len(df_s1))
+    logger.info(f"Preparing Stage 2 QUBO on survivors (top {pre_trim_n} candidates -> select 50)...")
+    s1_sorted_sub = df_s1.iloc[:pre_trim_n].copy().reset_index(drop=True)
+    bits_s2_sub = bits_po[df_s1["original_index"].values[:pre_trim_n]]
     S_sim_s2 = compute_tanimoto_kernel(bits_s2_sub, bits_s2_sub)
     v_s2 = s1_sorted_sub["v_i"].values
+    costs_s2 = s1_sorted_sub["c_i_inr"].values
+    budget_B_s2 = 50.0 * 800.0  # INR budget constraint
 
-    logger.info("Solving Stage 2 with QpiAI Opt LocalProvider...")
-    opt_s2_picks, opt_s2_energy, opt_s2_job, opt_s2_time = solve_qubo_qpiai_opt(
-        v_s2, S_sim_s2, k=50, lambda_div=2.0
-    )
-    # If returned exactly 50
-    if len(opt_s2_picks) != 50:
-        logger.warning(f"Opt returned {len(opt_s2_picks)} variables instead of 50. Adjusting to top 50.")
-        opt_s2_picks = sorted(list(set(opt_s2_picks) | set(np.argsort(v_s2)[-50:])))[:50]
+    logger.info("Solving Stage 2 with QpiAI Opt LocalProvider (Hierarchical 300 Partitioning)...")
+    if pre_trim_n == 300:
+        opt_s2_picks, opt_s2_energy, opt_s2_job, opt_s2_time = solve_qubo_qpiai_opt_hierarchical_300(
+            v_s2, S_sim_s2, costs=costs_s2, budget_B=budget_B_s2, k_target=50, lambda_div=2.0
+        )
+    else:
+        opt_s2_picks, opt_s2_energy, opt_s2_job, opt_s2_time = solve_qubo_qpiai_opt_core(
+            v_s2, S_sim_s2, costs=costs_s2, budget_B=budget_B_s2, k=50, lambda_div=2.0
+        )
 
     # Baseline solves for Stage 2
     logger.info("Running classical solver checks on Stage 2 (Greedy, Simulated Annealing)...")
-    greedy_s2_picks = list(np.argsort(v_s2)[-50:])
-    sa_s2_picks, sa_s2_energy, sa_s2_time = simulated_annealing_qubo(v_s2, S_sim_s2, k=50, lambda_div=2.0)
+    greedy_s2_picks, greedy_s2_energy, _ = greedy_qubo(v_s2, S_sim_s2, k=50, lambda_div=2.0, costs=costs_s2, budget_B=budget_B_s2)
+    sa_s2_picks, sa_s2_energy, sa_s2_time = simulated_annealing_qubo(v_s2, S_sim_s2, k=50, lambda_div=2.0, steps=1500, costs=costs_s2, budget_B=budget_B_s2)
 
     df_s2 = s1_sorted_sub.iloc[opt_s2_picks].copy().reset_index(drop=True)
     df_s2["stage2_rank"] = np.arange(1, len(df_s2) + 1)
@@ -196,8 +202,8 @@ def run_pipeline_funnel(seed: int = 11, R: float = 100000.0, beta: float = 0.5, 
         },
         "opt_solver_records": {
             "stage2_qubo": {
-                "job_id": opt_s2_job,
-                "n_variables": 75,
+                "run_id": opt_s2_job,
+                "n_variables": pre_trim_n,
                 "k": 50,
                 "opt_energy": opt_s2_energy,
                 "sa_energy": sa_s2_energy,
@@ -206,7 +212,7 @@ def run_pipeline_funnel(seed: int = 11, R: float = 100000.0, beta: float = 0.5, 
                 "is_feasible": True
             },
             "stage3_hubo": {
-                "job_id": opt_s3_job,
+                "run_id": opt_s3_job,
                 "n_variables": 50,
                 "k": 3,
                 "opt_energy": opt_s3_energy,

@@ -154,9 +154,9 @@ def load_raw_dataset(raw_dir: str) -> Tuple[pd.DataFrame, Dict]:
 
 
 if __name__ == "__main__":
-    raw_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\raw"
+    raw_dir = r".\data\raw"
     df, stats = load_raw_dataset(raw_dir)
-    out_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
+    out_dir = r".\data\processed"
     os.makedirs(out_dir, exist_ok=True)
     df.to_parquet(os.path.join(out_dir, "aldh1_clean.parquet"), index=False)
     with open(os.path.join(out_dir, "cleaning_log.json"), "w") as f:

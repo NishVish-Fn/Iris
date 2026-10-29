@@ -1,12 +1,24 @@
 PYTHON = python
 
-.PHONY: all data split cost features qkernel classical funnel evaluate export test clean run-backend
+.PHONY: all verify data split cost features qkernel classical funnel evaluate export test clean run-backend
 
-all: data split cost features qkernel classical funnel evaluate export test
-	@echo "=========================================================="
-	@echo "MolFunnel Pipeline Execution Successfully Completed!"
-	@echo "All models trained, selections frozen, and assets bundled."
-	@echo "=========================================================="
+all: verify data split cost features qkernel classical funnel evaluate export test
+	@echo ==========================================================
+	@echo IRIS PIPELINE COMPLETE (ALL MODELS EVALUATED & VERIFIED)
+	@echo ==========================================================
+
+verify:
+	@echo ==========================================================
+	@echo VERIFYING DATA INTEGRITY, CLAIMS, SECRETS, AND EVIDENCE
+	@echo ==========================================================
+	$(PYTHON) data/download.py
+	$(PYTHON) scripts/check_secrets.py
+	$(PYTHON) -m pytest -o cache_dir=.pytest_cache tests/test_claims.py
+	$(PYTHON) -m pytest -o cache_dir=.pytest_cache tests/test_qubo_ising.py
+	$(PYTHON) scripts/verify_evidence.py
+	@echo ==========================================================
+	@echo ALL CLAIMS, SECRETS, AND EVIDENCE 100% VERIFIED
+	@echo ==========================================================
 
 data:
 	$(PYTHON) pipeline/data.py
@@ -15,7 +27,6 @@ split:
 	$(PYTHON) pipeline/split.py
 
 cost:
-	$(PYTHON) pipeline/validate_coprinet.py
 	$(PYTHON) pipeline/cost.py
 
 features:

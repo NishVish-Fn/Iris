@@ -24,20 +24,30 @@ from sklearn.metrics import roc_auc_score, brier_score_loss
 from multiprocessing import Pool, cpu_count
 import qpiai_quantum as qq
 
+import tempfile
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load local environment if present
+load_dotenv()
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("molfunnel.qkernel")
 
-# Set QpiAI API key and temporary matplotlib directory
-QPIAI_KEY = "d44936124323424b6b0dd0d4894cc920133ab21518b10b0bf40904921a57b23c"
-os.environ["API_KEY"] = QPIAI_KEY
-os.environ["QPIAI_QUANTUM_API_KEY"] = QPIAI_KEY
-os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
+# Configure QpiAI API key and temporary matplotlib directory from environment
+QPIAI_KEY = os.environ.get("QPIAI_QCLOUD_API_TOKEN") or os.environ.get("API_KEY") or os.environ.get("QPIAI_QUANTUM_API_KEY") or ""
+if QPIAI_KEY:
+    os.environ["API_KEY"] = QPIAI_KEY
+    os.environ["QPIAI_QUANTUM_API_KEY"] = QPIAI_KEY
+os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib_qkernel")
 
 
 def _init_worker():
-    os.environ["API_KEY"] = QPIAI_KEY
-    os.environ["QPIAI_QUANTUM_API_KEY"] = QPIAI_KEY
-    os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
+    key = os.environ.get("QPIAI_QCLOUD_API_TOKEN") or os.environ.get("API_KEY") or os.environ.get("QPIAI_QUANTUM_API_KEY") or ""
+    if key:
+        os.environ["API_KEY"] = key
+        os.environ["QPIAI_QUANTUM_API_KEY"] = key
+    os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib_qkernel")
 
 
 def build_feature_map_circuit(x: np.ndarray, map_type: str = "zz", depth: int = 1, gamma: float = 0.25) -> qq.Circuit:
@@ -264,10 +274,11 @@ class BaggedQuantumKernelSVM:
 
 
 if __name__ == "__main__":
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
-    bloq_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\bloq"
-    runs_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results\runs\seed11"
-    os.makedirs(runs_dir, exist_ok=True)
+    base_dir = Path(__file__).resolve().parent.parent
+    processed_dir = base_dir / "data" / "processed"
+    bloq_dir = base_dir / "bloq"
+    runs_dir = base_dir / "results" / "runs" / "seed11"
+    runs_dir.mkdir(parents=True, exist_ok=True)
 
     X_train = np.load(os.path.join(processed_dir, "train_q8_seed11.npy"))
     X_pool = np.load(os.path.join(processed_dir, "pool_q8_seed11.npy"))
@@ -345,7 +356,7 @@ if __name__ == "__main__":
         "status": "RECORDED_GATE_EVIDENCE",
         "service": "QpiAI QCloud",
         "endpoint": "https://quantum-server.qpiai.tech/api",
-        "auth_email": "nb25ise205.shamat@nmit.ac.in",
+        "auth_status": "AUTHENTICATED",
         "user_organization": "6e58e8d0-9652-4e0f-9bb3-ad28094c7cca",
         "selected_architecture": winner,
         "n_qubits": 8,

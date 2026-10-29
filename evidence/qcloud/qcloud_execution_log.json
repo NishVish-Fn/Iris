@@ -1,0 +1,103 @@
+{
+  "timestamp": 1793267373.8522913,
+  "date_iso": "2026-10-29T09:49:33Z",
+  "auth_provider": "qpiai_quantum.QpiAIQuantumAuth",
+  "api_endpoint": "https://quantum-server.qpiai.tech/api",
+  "token_present": true,
+  "token_masked": "d4493612...57b23c",
+  "status": "AUTHENTICATED",
+  "resources": [
+    {
+      "backend": "QpiAI-QSV-Simulator",
+      "type": "Statevector Simulator",
+      "credits_per_job": 1
+    },
+    {
+      "backend": "QpiAI-QDM-Simulator",
+      "type": "Density Matrix Simulator",
+      "credits_per_job": 2
+    },
+    {
+      "backend": "QpiAI-QTN-Simulator",
+      "type": "Tensor Network Simulator",
+      "credits_per_job": 3
+    },
+    {
+      "backend": "QpiAI-QSV-Lite",
+      "type": "Lite Simulator",
+      "credits_per_job": 1
+    },
+    {
+      "backend": "QpiAI-QDM-Lite",
+      "type": "Lite Density Matrix",
+      "credits_per_job": 2
+    },
+    {
+      "backend": "QpiAI-Indus-1",
+      "type": "Superconducting Hardware",
+      "credits_per_job": 4
+    }
+  ],
+  "jobs_attempted": [
+    {
+      "backend": "QpiAI-QSV-Simulator",
+      "shots": 256,
+      "n_qubits": 8,
+      "timestamp": 1793267374.0247343,
+      "qasm_snippet": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[8];\ncreg c[8];\nh q[0];\nrz(0.5) q[0];\nh q[1];\nrz(1.2) q[1];\nh q[2];\nrz(2.1) q[2];\nh q[3];\nrz(0.8) q[3];\nh q[4];\nrz(1.5) q[4];\nh q[5];\nrz(2.7) q[5];\nh q[6];\nrz(0.3) q[6];\nh q[7];\nrz(1.9) q[7];\ncx q[0], q[1];\nrz(0.15) q[1];\ncx q[0], q[1];\ncx q[1], q[2];\nrz(0.6",
+      "status": "FAILED_SUBSCRIPTION_REQUIRED",
+      "error": "Failed to create job: an active subscription is required to run jobs (HTTP 400 Bad Request)",
+      "job_id": null
+    },
+    {
+      "backend": "QpiAI-QSV-Simulator",
+      "shots": 1024,
+      "n_qubits": 8,
+      "timestamp": 1793267375.0254188,
+      "qasm_snippet": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[8];\ncreg c[8];\nh q[0];\nrz(0.5) q[0];\nh q[1];\nrz(1.2) q[1];\nh q[2];\nrz(2.1) q[2];\nh q[3];\nrz(0.8) q[3];\nh q[4];\nrz(1.5) q[4];\nh q[5];\nrz(2.7) q[5];\nh q[6];\nrz(0.3) q[6];\nh q[7];\nrz(1.9) q[7];\ncx q[0], q[1];\nrz(0.15) q[1];\ncx q[0], q[1];\ncx q[1], q[2];\nrz(0.6",
+      "status": "FAILED_SUBSCRIPTION_REQUIRED",
+      "error": "Failed to create job: an active subscription is required to run jobs (HTTP 400 Bad Request)",
+      "job_id": null
+    },
+    {
+      "backend": "QpiAI-QSV-Simulator",
+      "shots": 8192,
+      "n_qubits": 8,
+      "timestamp": 1793267375.704111,
+      "qasm_snippet": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[8];\ncreg c[8];\nh q[0];\nrz(0.5) q[0];\nh q[1];\nrz(1.2) q[1];\nh q[2];\nrz(2.1) q[2];\nh q[3];\nrz(0.8) q[3];\nh q[4];\nrz(1.5) q[4];\nh q[5];\nrz(2.7) q[5];\nh q[6];\nrz(0.3) q[6];\nh q[7];\nrz(1.9) q[7];\ncx q[0], q[1];\nrz(0.15) q[1];\ncx q[0], q[1];\ncx q[1], q[2];\nrz(0.6",
+      "status": "FAILED_SUBSCRIPTION_REQUIRED",
+      "error": "Failed to create job: an active subscription is required to run jobs (HTTP 400 Bad Request)",
+      "job_id": null
+    },
+    {
+      "backend": "QpiAI-Indus-1",
+      "shots": 256,
+      "n_qubits": 8,
+      "timestamp": 1793267377.586593,
+      "qasm_snippet": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[8];\ncreg c[8];\nh q[0];\nrz(0.5) q[0];\nh q[1];\nrz(1.2) q[1];\nh q[2];\nrz(2.1) q[2];\nh q[3];\nrz(0.8) q[3];\nh q[4];\nrz(1.5) q[4];\nh q[5];\nrz(2.7) q[5];\nh q[6];\nrz(0.3) q[6];\nh q[7];\nrz(1.9) q[7];\ncx q[0], q[1];\nrz(0.15) q[1];\ncx q[0], q[1];\ncx q[1], q[2];\nrz(0.6",
+      "status": "FAILED_SUBSCRIPTION_REQUIRED",
+      "error": "Failed to create job: an active subscription is required to run jobs (HTTP 400 Bad Request)",
+      "job_id": null
+    },
+    {
+      "backend": "QpiAI-Indus-1",
+      "shots": 1024,
+      "n_qubits": 8,
+      "timestamp": 1793267378.4603784,
+      "qasm_snippet": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[8];\ncreg c[8];\nh q[0];\nrz(0.5) q[0];\nh q[1];\nrz(1.2) q[1];\nh q[2];\nrz(2.1) q[2];\nh q[3];\nrz(0.8) q[3];\nh q[4];\nrz(1.5) q[4];\nh q[5];\nrz(2.7) q[5];\nh q[6];\nrz(0.3) q[6];\nh q[7];\nrz(1.9) q[7];\ncx q[0], q[1];\nrz(0.15) q[1];\ncx q[0], q[1];\ncx q[1], q[2];\nrz(0.6",
+      "status": "FAILED_SUBSCRIPTION_REQUIRED",
+      "error": "Failed to create job: an active subscription is required to run jobs (HTTP 400 Bad Request)",
+      "job_id": null
+    },
+    {
+      "backend": "QpiAI-Indus-1",
+      "shots": 8192,
+      "n_qubits": 8,
+      "timestamp": 1793267381.1571376,
+      "qasm_snippet": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[8];\ncreg c[8];\nh q[0];\nrz(0.5) q[0];\nh q[1];\nrz(1.2) q[1];\nh q[2];\nrz(2.1) q[2];\nh q[3];\nrz(0.8) q[3];\nh q[4];\nrz(1.5) q[4];\nh q[5];\nrz(2.7) q[5];\nh q[6];\nrz(0.3) q[6];\nh q[7];\nrz(1.9) q[7];\ncx q[0], q[1];\nrz(0.15) q[1];\ncx q[0], q[1];\ncx q[1], q[2];\nrz(0.6",
+      "status": "FAILED_SUBSCRIPTION_REQUIRED",
+      "error": "Failed to create job: an active subscription is required to run jobs (HTTP 400 Bad Request)",
+      "job_id": null
+    }
+  ]
+}

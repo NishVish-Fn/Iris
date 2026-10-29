@@ -3,7 +3,7 @@ Generated automatically by `scripts/sdk_probe.py`.
 
 ## 1. `qpiai_quantum` Introspection
 - **Package Version:** `0.3.0`
-- **Module Path:** `C:\Users\creat\AppData\Local\Programs\Python\Python310\lib\site-packages\qpiai_quantum\__init__.py`
+- **Module Path:** `<site-packages>/qpiai_quantum/__init__.py`
 
 ### Top-Level Exports
 ```python
@@ -35,7 +35,7 @@ Methods & Gates confirmed by inspection:
 
 ## 2. `qpiai_opt` Introspection
 - **Package Version:** `unknown`
-- **Module Path:** `C:\Users\creat\AppData\Local\Programs\Python\Python310\lib\site-packages\qpiai_opt\__init__.py`
+- **Module Path:** `<site-packages>/qpiai_opt/__init__.py`
 
 ### `qpiai_opt.opt_solvers` Members
 ```python

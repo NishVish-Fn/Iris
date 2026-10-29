@@ -157,8 +157,8 @@ class ClassicalModelSuite:
 
 
 if __name__ == "__main__":
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
-    out_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results\runs\seed11"
+    processed_dir = r".\data\processed"
+    out_dir = r".\results\runs\seed11"
     os.makedirs(out_dir, exist_ok=True)
 
     X_q8_train = np.load(os.path.join(processed_dir, "train_q8_seed11.npy"))

@@ -56,10 +56,10 @@ def evaluate_run(run_dir: str, pool_labels_path: str, R: float = 100000.0) -> Di
     df_top20["true_label"] = df_top20["pubchem_sid"].map(label_dict)
     df_final3["true_label"] = df_final3["pubchem_sid"].map(label_dict)
 
-    # Distinct active scaffolds in pool
-    active_scafs_pool = set(df_labels[df_labels["label"] == 1]["pubchem_sid"].map(
-        dict(zip(df_s1["pubchem_sid"], df_s1["scaffold"]))
-    ).dropna())
+    # Distinct active scaffolds in ENTIRE pool (denominator must be all active scaffolds in pool)
+    df_pool_full = pd.read_parquet(os.path.join(processed_dir, f"pool_features_seed{seed}.parquet"))
+    active_sids_pool = set(df_labels[df_labels["label"] == 1]["pubchem_sid"])
+    active_scafs_pool = set(df_pool_full[df_pool_full["pubchem_sid"].isin(active_sids_pool)]["scaffold"])
     n_active_scafs_pool = max(1, len(active_scafs_pool))
 
     stages_metrics = {}
@@ -169,8 +169,8 @@ def evaluate_run(run_dir: str, pool_labels_path: str, R: float = 100000.0) -> Di
 
 
 if __name__ == "__main__":
-    run_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results\runs\seed11"
-    labels_file = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed\pool_hidden_labels_seed11.parquet"
+    run_dir = r".\results\runs\seed11"
+    labels_file = r".\data\processed\pool_hidden_labels_seed11.parquet"
     metrics = evaluate_run(run_dir, labels_file)
     print("\n=== Official Evaluation Metrics (QML-04) ===")
     print(json.dumps(metrics["official_primary_metrics"], indent=2))

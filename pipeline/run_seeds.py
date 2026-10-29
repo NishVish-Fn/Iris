@@ -40,9 +40,9 @@ from pipeline.evaluate import evaluate_run
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("molfunnel.multiseed")
 
-PROCESSED_DIR = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
-RESULTS_DIR = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results"
-COPRINET_CSV = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\coprinet\test_set_PC_scores.csv"
+PROCESSED_DIR = r".\data\processed"
+RESULTS_DIR = r".\results"
+COPRINET_CSV = r".\data\coprinet\test_set_PC_scores.csv"
 CLEAN_DATA = os.path.join(PROCESSED_DIR, "aldh1_clean.parquet")
 
 

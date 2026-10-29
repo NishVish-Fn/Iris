@@ -1,0 +1,63 @@
+# Iris / MolFunnel (QML-04) — Claims Traceability Manifest
+# Every documented claim, value, source file, and JSON path is strictly checked by tests/test_claims.py.
+
+claims:
+  - id: "stage1_hits"
+    claim: "Stage 1 Classical Filter (1,000 compounds) selects 77 true active hits in Seed 11"
+    value: 77
+    source_file: "results/runs/seed11/metrics.json"
+    json_path: "official_primary_metrics.stage1_1000.hits"
+
+  - id: "stage1_ef"
+    claim: "Stage 1 Enrichment Factor is 1.48x"
+    value: 1.48
+    source_file: "results/runs/seed11/metrics.json"
+    json_path: "official_primary_metrics.stage1_1000.enrichment_factor"
+
+  - id: "stage2_hits"
+    claim: "Stage 2 QpiAI Opt QUBO (50 compounds) selects 6 true active hits in Seed 11"
+    value: 6
+    source_file: "results/runs/seed11/metrics.json"
+    json_path: "official_primary_metrics.stage2_50.hits"
+
+  - id: "stage2_ef"
+    claim: "Stage 2 Enrichment Factor is 2.30x"
+    value: 2.3
+    source_file: "results/runs/seed11/metrics.json"
+    json_path: "official_primary_metrics.stage2_50.enrichment_factor"
+
+  - id: "stage3_hits"
+    claim: "Stage 3 QpiAI Opt HUBO selects 3 compounds with 0 true active hits (honest evaluation)"
+    value: 0
+    source_file: "results/runs/seed11/metrics.json"
+    json_path: "official_primary_metrics.stage3_final3.hits"
+
+  - id: "opt_hubo_gap"
+    claim: "Stage 3 QpiAI Opt HUBO solution matches Brute Force global optimum with 0.00% optimality gap"
+    value: 0.0
+    source_file: "results/runs/seed11/selection.json"
+    json_path: "opt_solver_records.stage3_hubo.optimality_gap"
+
+  - id: "quantum_qubits"
+    claim: "Quantum fidelity kernel circuits execute on 8 qubits"
+    value: 8
+    source_file: "results/shot_noise_analysis.json"
+    json_path: "n_qubits"
+
+  - id: "cost_model_r2"
+    claim: "Synthetic cost model achieves R^2 of 0.9070 against synthesis benchmark"
+    value: 0.9070
+    source_file: "results/cost_model_sensitivity.json"
+    json_path: "cost_model_accuracy.r_squared"
+
+  - id: "cost_model_spearman"
+    claim: "Synthetic cost model achieves Spearman rank correlation of 0.9749"
+    value: 0.9749
+    source_file: "results/cost_model_sensitivity.json"
+    json_path: "cost_model_accuracy.spearman_rho"
+
+  - id: "psd_verified"
+    claim: "Quantum fidelity kernel matrix is confirmed positive semi-definite (min eigenvalue >= -1e-8)"
+    value: true
+    source_file: "results/quantum_diagnostics.json"
+    json_path: "psd_check.is_positive_semidefinite"

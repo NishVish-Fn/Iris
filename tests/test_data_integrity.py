@@ -9,7 +9,7 @@ import pytest
 
 
 def test_zero_scaffold_overlap():
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
+    processed_dir = r".\data\processed"
     train_path = os.path.join(processed_dir, "train_seed11.parquet")
     pool_path = os.path.join(processed_dir, "pool_features_seed11.parquet")
 
@@ -27,7 +27,7 @@ def test_zero_scaffold_overlap():
 
 
 def test_no_label_leak_in_pool():
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
+    processed_dir = r".\data\processed"
     pool_path = os.path.join(processed_dir, "pool_features_seed11.parquet")
 
     df_pool = pd.read_parquet(pool_path)

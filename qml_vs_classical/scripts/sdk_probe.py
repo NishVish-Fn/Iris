@@ -24,7 +24,8 @@ token_qcloud = os.environ.get("QPIAI_QCLOUD_API_TOKEN", "")
 if token_qcloud:
     os.environ["API_KEY"] = token_qcloud
     os.environ["QPIAI_QUANTUM_API_KEY"] = token_qcloud
-os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
+import tempfile
+os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib_probe")
 
 docs_path = Path(__file__).resolve().parent.parent / "docs" / "sdk_capabilities.md"
 docs_path.parent.mkdir(parents=True, exist_ok=True)

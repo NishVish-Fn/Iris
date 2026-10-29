@@ -1,0 +1,20 @@
+{
+  "calibration_split": "Held-out scaffold-grouped fold (fold 5)",
+  "platt_scaling": {
+    "brier_score_uncalibrated": 0.052,
+    "brier_score_calibrated": 0.041,
+    "ece_uncalibrated": 0.084,
+    "ece_calibrated": 0.028
+  },
+  "split_conformal_prediction": {
+    "alpha": 0.1,
+    "coverage_guarantee": "90%",
+    "non_conformity_radius_q": 0.142,
+    "conformal_interval_formula": "[P_cal - q, P_cal + q]"
+  },
+  "applicability_domain": {
+    "method": "Euclidean distance to nearest training anchor in 8-D quantum latent space",
+    "threshold_ad": 1.85,
+    "high_confidence_pct": 86.4
+  }
+}

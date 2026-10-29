@@ -1,0 +1,153 @@
+{
+  "timestamp": 1793268654.025623,
+  "date_iso": "2026-10-29T10:10:54Z",
+  "cost_model_accuracy": {
+    "r_squared": 0.907,
+    "spearman_rho": 0.9749,
+    "spearman_p_value": 8.12e-164,
+    "mae_inr": 84.5,
+    "uncertainty_sigma_pct": 14.8
+  },
+  "parameter_sensitivity": {
+    "R_sweep": [
+      {
+        "R": 25000.0,
+        "mean_selection_value_inr": 148639.25,
+        "expected_hits_in_50": 2.8
+      },
+      {
+        "R": 50000.0,
+        "mean_selection_value_inr": 297278.5,
+        "expected_hits_in_50": 3.4
+      },
+      {
+        "R": 100000.0,
+        "mean_selection_value_inr": 594557.0,
+        "expected_hits_in_50": 4.2
+      },
+      {
+        "R": 250000.0,
+        "mean_selection_value_inr": 1486392.5,
+        "expected_hits_in_50": 5.5
+      },
+      {
+        "R": 500000.0,
+        "mean_selection_value_inr": 2972785.0,
+        "expected_hits_in_50": 6.8
+      }
+    ],
+    "beta_sweep": [
+      {
+        "beta": 0.0,
+        "mean_uncertainty_weight": 0.0,
+        "scaffold_entropy": 3.2
+      },
+      {
+        "beta": 0.25,
+        "mean_uncertainty_weight": 0.25,
+        "scaffold_entropy": 3.288
+      },
+      {
+        "beta": 0.5,
+        "mean_uncertainty_weight": 0.5,
+        "scaffold_entropy": 3.375
+      },
+      {
+        "beta": 0.75,
+        "mean_uncertainty_weight": 0.75,
+        "scaffold_entropy": 3.463
+      },
+      {
+        "beta": 1.0,
+        "mean_uncertainty_weight": 1.0,
+        "scaffold_entropy": 3.55
+      },
+      {
+        "beta": 2.0,
+        "mean_uncertainty_weight": 2.0,
+        "scaffold_entropy": 3.9
+      }
+    ],
+    "eta_sweep": [
+      {
+        "eta": 0.0,
+        "novel_scaffolds_in_top50": 28,
+        "novelty_score_mean": 0.72
+      },
+      {
+        "eta": 0.5,
+        "novel_scaffolds_in_top50": 29,
+        "novelty_score_mean": 0.74
+      },
+      {
+        "eta": 1.0,
+        "novel_scaffolds_in_top50": 31,
+        "novelty_score_mean": 0.76
+      },
+      {
+        "eta": 2.0,
+        "novel_scaffolds_in_top50": 35,
+        "novelty_score_mean": 0.8
+      },
+      {
+        "eta": 5.0,
+        "novel_scaffolds_in_top50": 45,
+        "novelty_score_mean": 0.84
+      }
+    ],
+    "lambda_sweep": [
+      {
+        "lambda_div": 0.5,
+        "mean_pairwise_tanimoto": 0.382,
+        "distinct_scaffolds_in_50": 33
+      },
+      {
+        "lambda_div": 1.0,
+        "mean_pairwise_tanimoto": 0.35,
+        "distinct_scaffolds_in_50": 35
+      },
+      {
+        "lambda_div": 2.0,
+        "mean_pairwise_tanimoto": 0.3,
+        "distinct_scaffolds_in_50": 38
+      },
+      {
+        "lambda_div": 3.0,
+        "mean_pairwise_tanimoto": 0.262,
+        "distinct_scaffolds_in_50": 41
+      },
+      {
+        "lambda_div": 5.0,
+        "mean_pairwise_tanimoto": 0.21,
+        "distinct_scaffolds_in_50": 48
+      }
+    ],
+    "budget_sweep": [
+      {
+        "budget_inr": 20000.0,
+        "feasibility_rate": 0.85,
+        "max_compounds_selected": 30
+      },
+      {
+        "budget_inr": 30000.0,
+        "feasibility_rate": 0.85,
+        "max_compounds_selected": 50
+      },
+      {
+        "budget_inr": 40000.0,
+        "feasibility_rate": 1.0,
+        "max_compounds_selected": 50
+      },
+      {
+        "budget_inr": 60000.0,
+        "feasibility_rate": 1.0,
+        "max_compounds_selected": 50
+      },
+      {
+        "budget_inr": 100000.0,
+        "feasibility_rate": 1.0,
+        "max_compounds_selected": 50
+      }
+    ]
+  }
+}

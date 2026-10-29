@@ -10,7 +10,10 @@ from reportlab.platypus import (
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfgen import canvas
 
-os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
+import tempfile
+from pathlib import Path
+
+os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib_pdf")
 
 class NumberedCanvas(canvas.Canvas):
     def __init__(self, *args, **kwargs):
@@ -54,10 +57,10 @@ class NumberedCanvas(canvas.Canvas):
 
 
 def build_pdf():
-    out_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results"
+    out_dir = r".\results"
     os.makedirs(out_dir, exist_ok=True)
     pdf_path = os.path.join(out_dir, "IRIS_QML04_Comprehensive_Report.pdf")
-    artifact_path = r"C:\Users\creat\.gemini\antigravity\brain\fc87600a-f888-4c13-95c0-a20a4d8875b1\IRIS_QML04_Comprehensive_Report.pdf"
+    artifact_path = os.path.join(out_dir, "IRIS_QML04_Comprehensive_Report.pdf")
 
     doc = SimpleDocTemplate(
         pdf_path,

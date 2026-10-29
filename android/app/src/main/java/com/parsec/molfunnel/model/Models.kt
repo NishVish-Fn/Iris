@@ -135,9 +135,9 @@ data class QProbeResponse(
     @SerializedName("feature_angles_rad") val featureAngles: List<Double> = emptyList(),
     @SerializedName("kernel_entries") val kernelEntries: List<Double> = emptyList(),
     @SerializedName("shot_noise_sigma") val shotNoiseSigma: List<Double> = emptyList(),
-    @SerializedName("api_key_auth") val apiKeyAuth: String = "QPIAI_QCLOUD_KEY: d44936...57b23c",
-    @SerializedName("endpoint") val endpoint: String = "https://qcloud-server.qpiai.tech",
-    @SerializedName("entanglement_entropy") val entanglementEntropy: Double = 0.781,
+    @SerializedName("api_key_auth") val apiKeyAuth: String = "AUTHENTICATED (Backend .env)",
+    @SerializedName("endpoint") val endpoint: String = "http://10.0.2.2:8000",
+    @SerializedName("entanglement_entropy") val entanglementEntropy: Double = 0.500,
     @SerializedName("data_criteria") val dataCriteria: Map<String, String> = emptyMap()
 )
 

@@ -167,6 +167,11 @@ fun ResultsScreen(bundle: AppBundle) {
                 BestVsLeastModelsRectangleComparisonSection()
             }
         }
+
+        // Bottom spacer to ensure no cards are truncated or hidden behind bottom navigation
+        item {
+            Spacer(modifier = Modifier.height(72.dp))
+        }
     }
 }
 
@@ -1092,7 +1097,7 @@ fun ClassicalVsQmlModelBenchmark() {
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = if (m.isOurs) FontWeight.Bold else FontWeight.Medium,
                             color = if (m.isOurs) InkPrimary else InkSecondary,
-                            maxLines = 1,
+                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -1452,7 +1457,7 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (m.isBest) FontWeight.Bold else FontWeight.Medium,
                                 color = InkPrimary,
-                                maxLines = 1,
+                                maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
                             Spacer(modifier = Modifier.width(6.dp))

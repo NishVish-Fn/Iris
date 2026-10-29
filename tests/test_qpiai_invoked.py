@@ -7,7 +7,7 @@ import os
 import json
 import pytest
 
-RUN_DIR = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\results\runs\seed11"
+RUN_DIR = r".\results\runs\seed11"
 
 
 def test_qpiai_records_exist():

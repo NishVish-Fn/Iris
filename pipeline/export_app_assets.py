@@ -38,7 +38,7 @@ def render_molecule_svg(smiles: str, out_path: str, width: int = 320, height: in
 
 
 def export_assets_for_app(seed: int = 11):
-    base_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel"
+    base_dir = r"."
     run_dir = os.path.join(base_dir, "results", "runs", f"seed{seed}")
     android_assets = os.path.join(base_dir, "android", "app", "src", "main", "assets")
     svg_dir = os.path.join(android_assets, "svgs")

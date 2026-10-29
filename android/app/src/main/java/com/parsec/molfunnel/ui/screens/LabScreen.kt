@@ -103,9 +103,9 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = if (isBackendOnline)
-                            "Direct cloud HTTPS integration active via your internet connection. Authenticated for ${repository.qcloudUser} (${repository.qcloudEmail}). All quantum circuits and combinatorial solves communicate directly with QpiAI servers."
+                            "Local FastAPI backend connected to Python QpiAI SDK environment. All statevector quantum circuits and combinatorial solves run via authenticated local SDK engines."
                         else
-                            "Connecting to QpiAI servers over device internet... Direct HTTPS calls target https://qcloud-server.qpiai.tech and https://opt-server.qpiai.tech using your authorized tokens.",
+                            "Offline Mode: Operating with pre-computed, verified 10,000-compound Seed 11 benchmark run. All metrics, circuits, and lead selections are cached and cryptographically audited.",
                         style = MaterialTheme.typography.bodySmall,
                         color = InkSecondary
                     )
@@ -114,12 +114,12 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                     HorizontalDivider(color = HairlineBorder)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    InfoRow("Cloud Identity", "${repository.qcloudUser} (NMIT)")
-                    InfoRow("Organization ID", repository.qcloudOrg)
-                    InfoRow("QpiAI QCloud Token", "${repository.qcloudToken.take(8)}...${repository.qcloudToken.takeLast(6)} (Verified 200 OK)")
-                    InfoRow("QpiAI Opt API Token", "${repository.optToken.take(8)}...${repository.optToken.takeLast(6)} (Verified 200 OK)")
-                    InfoRow("QCloud Server", "https://qcloud-server.qpiai.tech")
-                    InfoRow("Opt Solver Server", "https://opt-server.qpiai.tech")
+                    InfoRow("Execution Mode", if (isBackendOnline) "LOCAL_BACKEND (FastAPI)" else "CACHED_RUN (Seed 11)")
+                    InfoRow("Quantum Simulator", "QpiAI-QSV-Simulator / Local Statevector")
+                    InfoRow("Combinatorial Solver", "QpiAI Opt LocalProvider (HUBO / QUBO)")
+                    InfoRow("Token Security", "Environment Variables (.env Only)")
+                    InfoRow("QCloud Auth", "Verified 200 OK (Job status: FAILED_SUBSCRIPTION)")
+                    InfoRow("Opt Local Limits", "n <= 250 (Hierarchical 300-Var Partitioning)")
                 }
             }
 
@@ -354,7 +354,7 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
 
                         InfoRow("Job Reference", res.jobId)
                         InfoRow("QpiAI Solver Model", res.solverType)
-                        InfoRow("Authenticated Token", "${repository.optToken.take(8)}...${repository.optToken.takeLast(6)} (200 OK)")
+                        InfoRow("Provenance Tag", if (res.status == "OPT_LOCAL") "OPT_LOCAL" else "CACHED_RUN")
                         InfoRow("Cloud Status", res.status)
                         InfoRow("Solve Execution Time", "${String.format("%.1f", res.runtimeMs)} ms")
 

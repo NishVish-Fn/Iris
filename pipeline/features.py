@@ -200,7 +200,7 @@ def evaluate_compression_candidates(
 
 
 if __name__ == "__main__":
-    processed_dir = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed"
+    processed_dir = r".\data\processed"
     df_train = pd.read_parquet(os.path.join(processed_dir, "train_seed11.parquet"))
     df_pool = pd.read_parquet(os.path.join(processed_dir, "pool_features_seed11.parquet"))
 

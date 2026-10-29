@@ -1,0 +1,265 @@
+{
+  "timestamp": 1793267995.192861,
+  "date_iso": "2026-10-29T09:59:55Z",
+  "provenance": "OPT_LOCAL",
+  "solver_framework": "qpiai_opt.opt_solvers.LocalProvider",
+  "benchmarks": [
+    {
+      "n_variables": 20,
+      "k_selected": 4,
+      "best_known_energy": -17718.390426729533,
+      "qpiai_opt": {
+        "architecture": "qpiai_opt_local_qubo",
+        "run_id": "opt-local-qubo-run-1793267981887",
+        "energy": 133529.31094206718,
+        "optimality_gap": 8.536198702373559,
+        "runtime_seconds": 0.9370226860046387,
+        "feasible": true,
+        "selected_count": 4
+      },
+      "simulated_annealing": {
+        "energy": -17718.390426729533,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.13269805908203125,
+        "feasible": true
+      },
+      "tabu_search": {
+        "energy": -17718.390426729533,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.6374337673187256,
+        "feasible": true
+      },
+      "greedy": {
+        "energy": 133529.31094206718,
+        "optimality_gap": 8.536198702373559,
+        "runtime_seconds": 0.0,
+        "feasible": true
+      }
+    },
+    {
+      "n_variables": 30,
+      "k_selected": 6,
+      "best_known_energy": -27032.60773048577,
+      "qpiai_opt": {
+        "architecture": "qpiai_opt_local_qubo",
+        "run_id": "opt-local-qubo-run-1793267982933",
+        "energy": -24366.217141796184,
+        "optimality_gap": 0.09863608480814787,
+        "runtime_seconds": 0.16585540771484375,
+        "feasible": true,
+        "selected_count": 6
+      },
+      "simulated_annealing": {
+        "energy": -27032.60773048577,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.13981389999389648,
+        "feasible": true
+      },
+      "tabu_search": {
+        "energy": -27032.60773048577,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.7386147975921631,
+        "feasible": true
+      },
+      "greedy": {
+        "energy": -27032.60773048577,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.0,
+        "feasible": true
+      }
+    },
+    {
+      "n_variables": 50,
+      "k_selected": 10,
+      "best_known_energy": -46219.95616489635,
+      "qpiai_opt": {
+        "architecture": "qpiai_opt_local_qubo",
+        "run_id": "opt-local-qubo-run-1793267984440",
+        "energy": -38301.80923194901,
+        "optimality_gap": 0.17131446219243937,
+        "runtime_seconds": 0.6884133815765381,
+        "feasible": true,
+        "selected_count": 10
+      },
+      "simulated_annealing": {
+        "energy": -46219.95616489635,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.12777233123779297,
+        "feasible": true
+      },
+      "tabu_search": {
+        "energy": -46219.95616489635,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.689145565032959,
+        "feasible": true
+      },
+      "greedy": {
+        "energy": -46219.95616489635,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.0,
+        "feasible": true
+      }
+    },
+    {
+      "n_variables": 75,
+      "k_selected": 15,
+      "best_known_energy": -64775.54676617724,
+      "qpiai_opt": {
+        "architecture": "qpiai_opt_local_qubo",
+        "run_id": "opt-local-qubo-run-1793267985850",
+        "energy": -53718.27505064306,
+        "optimality_gap": 0.1707013258482871,
+        "runtime_seconds": 0.6543712615966797,
+        "feasible": true,
+        "selected_count": 15
+      },
+      "simulated_annealing": {
+        "energy": -64775.54676617722,
+        "optimality_gap": 3.369770527965311e-16,
+        "runtime_seconds": 0.14302635192871094,
+        "feasible": true
+      },
+      "tabu_search": {
+        "energy": -64775.54676617722,
+        "optimality_gap": 3.369770527965311e-16,
+        "runtime_seconds": 0.6054260730743408,
+        "feasible": true
+      },
+      "greedy": {
+        "energy": -64775.54676617724,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.0,
+        "feasible": true
+      }
+    },
+    {
+      "n_variables": 100,
+      "k_selected": 20,
+      "best_known_energy": -89473.12555417945,
+      "qpiai_opt": {
+        "architecture": "qpiai_opt_local_qubo",
+        "run_id": "opt-local-qubo-run-1793267987867",
+        "energy": -54601.759922667756,
+        "optimality_gap": 0.3897412258208833,
+        "runtime_seconds": 1.276646614074707,
+        "feasible": true,
+        "selected_count": 20
+      },
+      "simulated_annealing": {
+        "energy": -89473.12555417944,
+        "optimality_gap": 1.6264006804540547e-16,
+        "runtime_seconds": 0.11891603469848633,
+        "feasible": true
+      },
+      "tabu_search": {
+        "energy": -89473.12555417944,
+        "optimality_gap": 1.6264006804540547e-16,
+        "runtime_seconds": 0.6045558452606201,
+        "feasible": true
+      },
+      "greedy": {
+        "energy": -89473.12555417945,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.003736734390258789,
+        "feasible": true
+      }
+    },
+    {
+      "n_variables": 300,
+      "k_selected": 50,
+      "best_known_energy": -232388.32681481284,
+      "qpiai_opt": {
+        "architecture": "qpiai_opt_hierarchical_qubo_300",
+        "run_id": "opt-hierarchical-qubo-300-run-1793267993722",
+        "energy": -202054.43204169848,
+        "optimality_gap": 0.13053106061255407,
+        "runtime_seconds": 4.769054174423218,
+        "feasible": true,
+        "selected_count": 50
+      },
+      "simulated_annealing": {
+        "energy": -232388.32681481284,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.14414739608764648,
+        "feasible": true
+      },
+      "tabu_search": {
+        "energy": -232388.32681481284,
+        "optimality_gap": 0.0,
+        "runtime_seconds": 0.8802564144134521,
+        "feasible": true
+      },
+      "greedy": {
+        "energy": -232388.3268148128,
+        "optimality_gap": 1.2523791902820557e-16,
+        "runtime_seconds": 0.05485725402832031,
+        "feasible": true
+      }
+    }
+  ],
+  "sensitivity_sweep": [
+    {
+      "num_reads": 1,
+      "num_sweeps": 50,
+      "energy": -33351.51994726177,
+      "runtime_seconds": 0.08053755760192871,
+      "feasible": true
+    },
+    {
+      "num_reads": 1,
+      "num_sweeps": 150,
+      "energy": -34610.1268513929,
+      "runtime_seconds": 0.14221978187561035,
+      "feasible": true
+    },
+    {
+      "num_reads": 1,
+      "num_sweeps": 300,
+      "energy": -35767.186886297575,
+      "runtime_seconds": 0.30228447914123535,
+      "feasible": true
+    },
+    {
+      "num_reads": 2,
+      "num_sweeps": 50,
+      "energy": -33351.51994726177,
+      "runtime_seconds": 0.09437274932861328,
+      "feasible": true
+    },
+    {
+      "num_reads": 2,
+      "num_sweeps": 150,
+      "energy": -34610.1268513929,
+      "runtime_seconds": 0.14200997352600098,
+      "feasible": true
+    },
+    {
+      "num_reads": 2,
+      "num_sweeps": 300,
+      "energy": -35767.186886297575,
+      "runtime_seconds": 0.22101807594299316,
+      "feasible": true
+    },
+    {
+      "num_reads": 4,
+      "num_sweeps": 50,
+      "energy": -33351.51994726177,
+      "runtime_seconds": 0.09028315544128418,
+      "feasible": true
+    },
+    {
+      "num_reads": 4,
+      "num_sweeps": 150,
+      "energy": -34610.1268513929,
+      "runtime_seconds": 0.1494908332824707,
+      "feasible": true
+    },
+    {
+      "num_reads": 4,
+      "num_sweeps": 300,
+      "energy": -35767.186886297575,
+      "runtime_seconds": 0.229567289352417,
+      "feasible": true
+    }
+  ]
+}

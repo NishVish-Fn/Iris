@@ -1,0 +1,76 @@
+{
+  "timestamp": 1793268700.4236546,
+  "date_iso": "2026-10-29T10:11:40Z",
+  "provenance": "SIMULATED_NOISE",
+  "noise_sensitivity_study": [
+    {
+      "noise_label": "SIMULATED_NOISE",
+      "depolarizing_error_rate_p": 0.0,
+      "damping_factor": 1.0,
+      "effective_auc": 0.8311,
+      "auc_retention_pct": 86.13
+    },
+    {
+      "noise_label": "SIMULATED_NOISE",
+      "depolarizing_error_rate_p": 0.005,
+      "damping_factor": 0.9801,
+      "effective_auc": 0.8333,
+      "auc_retention_pct": 86.36
+    },
+    {
+      "noise_label": "SIMULATED_NOISE",
+      "depolarizing_error_rate_p": 0.01,
+      "damping_factor": 0.9606,
+      "effective_auc": 0.8333,
+      "auc_retention_pct": 86.36
+    },
+    {
+      "noise_label": "SIMULATED_NOISE",
+      "depolarizing_error_rate_p": 0.02,
+      "damping_factor": 0.9224,
+      "effective_auc": 0.8333,
+      "auc_retention_pct": 86.36
+    },
+    {
+      "noise_label": "SIMULATED_NOISE",
+      "depolarizing_error_rate_p": 0.05,
+      "damping_factor": 0.8145,
+      "effective_auc": 0.8333,
+      "auc_retention_pct": 86.36
+    },
+    {
+      "noise_label": "SIMULATED_NOISE",
+      "depolarizing_error_rate_p": 0.1,
+      "damping_factor": 0.6561,
+      "effective_auc": 0.8333,
+      "auc_retention_pct": 86.36
+    }
+  ],
+  "hardware_scaling_economics": {
+    "full_10k_x_3k_matrix": {
+      "total_entries": 30000000,
+      "qpiai_qsv_credits": 30000000,
+      "qpiai_indus1_credits": 120000000,
+      "projected_runtime_hours": 1000.0,
+      "projected_runtime_days": 41.7,
+      "hardware_feasibility": "INFEASIBLE_WITHOUT_ANCHOR_COMPRESSION"
+    },
+    "molfunnel_bagged_anchor_design": {
+      "anchor_size": 50,
+      "total_entries": 500000,
+      "qpiai_credits": 500000,
+      "projected_runtime_hours": 16.7,
+      "speedup_factor": "60x compression",
+      "feasibility": "FEASIBLE"
+    }
+  },
+  "when_would_quantum_help": {
+    "necessary_conditions": [
+      "High-rank topological phase correlations in Hilbert space (e.g. molecular orbital parity)",
+      "Qubit count n >= 40 where classical statevector simulation requires > 16 TB RAM (2^40 amplitudes)",
+      "Quantum feature map depth d >= 4 with ring/all-to-all non-local entanglement",
+      "Error mitigation techniques (zero-noise extrapolation) applied to preserve fidelity"
+    ],
+    "current_nisq_status": "At n=8 qubits, classical RBF and statevector simulators can evaluate the Hilbert space instantaneously in O(2^8) = 256 dimensions. Genuine quantum advantage will manifest once physical QPUs scale past 40-50 fault-tolerant qubits."
+  }
+}

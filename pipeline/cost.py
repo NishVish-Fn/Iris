@@ -125,9 +125,9 @@ class CompoundCostEngine:
 
 
 if __name__ == "__main__":
-    coprinet_csv = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\coprinet\test_set_PC_scores.csv"
-    pool_file = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed\pool_features_seed11.parquet"
-    out_file = r"C:\Users\creat\.gemini\antigravity\scratch\molfunnel\data\processed\cost_pool_seed11.parquet"
+    coprinet_csv = r".\data\coprinet\test_set_PC_scores.csv"
+    pool_file = r".\data\processed\pool_features_seed11.parquet"
+    out_file = r".\data\processed\cost_pool_seed11.parquet"
 
     engine = CompoundCostEngine()
     engine.fit_coprinet_surrogate(coprinet_csv, sample_size=25000)

@@ -35,7 +35,8 @@ def load_environment():
         os.environ["API_KEY"] = token_qcloud
         os.environ["QPIAI_QUANTUM_API_KEY"] = token_qcloud
         
-    os.environ["MPLCONFIGDIR"] = r"C:\Users\creat\AppData\Local\Temp"
+import tempfile
+    os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib_utils")
 
 def load_config(config_path: Optional[Union[str, Path]] = None) -> Dict[str, Any]:
     """Loads benchmark configuration from yaml."""
