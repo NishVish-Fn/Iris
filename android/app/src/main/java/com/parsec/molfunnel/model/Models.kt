@@ -74,11 +74,21 @@ data class LeadCompound(
     @SerializedName("tpsa") val tpsa: Double = 76.4,
     @SerializedName("hbd") val hbd: Int = 2,
     @SerializedName("hba") val hba: Int = 4,
-    @SerializedName("rot_bonds") val rotBonds: Int = 3,
-    @SerializedName("pains_alerts") val painsAlerts: Int = 0,
+    @SerializedName("rotatable_bonds") val rotBonds: Int = 3,
+    @SerializedName("pains_alerts") val painsAlertsList: List<String> = emptyList(),
+    @SerializedName("pains_pass") val painsPass: Boolean = true,
+    @SerializedName("brenk_alerts") val brenkAlertsList: List<String> = emptyList(),
+    @SerializedName("brenk_pass") val brenkPass: Boolean = true,
+    @SerializedName("lipinski_violations") val lipinskiViolations: Int = 0,
+    @SerializedName("lipinski_pass") val lipinskiPass: Boolean = true,
+    @SerializedName("veber_pass") val veberPass: Boolean = true,
+    @SerializedName("applicability_domain") val applicabilityDomain: String = "IN_DOMAIN",
+    @SerializedName("planned_counter_screens") val plannedCounterScreens: List<String> = emptyList(),
     @SerializedName("aldh2_selectivity") val aldh2Selectivity: Double = 14.8,
     @SerializedName("solubility_log_s") val solubilityLogS: Double = -3.42
-)
+) {
+    val painsAlerts: Int get() = painsAlertsList.size
+}
 
 data class ValidationPlanItem(
     @SerializedName("lead_num") val leadNum: Int = 0,

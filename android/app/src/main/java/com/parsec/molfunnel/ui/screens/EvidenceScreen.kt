@@ -2,7 +2,6 @@ package com.parsec.molfunnel.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +19,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.data.MolFunnelRepository
@@ -40,30 +39,31 @@ fun EvidenceScreen(
             .fillMaxSize()
             .background(CanvasBg)
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             // Header
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Surface(
                     shape = CircleShape,
                     color = HitBadgeBg,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(38.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.Verified,
                             contentDescription = "Verified Evidence",
                             tint = HitBadgeText,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Verifiable Evidence Audit",
                         style = MaterialTheme.typography.titleLarge,
@@ -72,9 +72,10 @@ fun EvidenceScreen(
                         color = InkPrimary
                     )
                     Text(
-                        text = "Zero fabricated numbers • Cryptographic provenance & claims verification",
+                        text = "Cryptographic provenance & claims verification",
                         style = MaterialTheme.typography.bodySmall,
-                        color = InkSecondary
+                        color = InkSecondary,
+                        maxLines = 2
                     )
                 }
             }
@@ -107,7 +108,7 @@ fun EvidenceScreen(
                                 text = "HONEST DISCLOSURE",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
-                                fontSize = 9.sp,
+                                fontSize = 8.5.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = HitBadgeText
                             )
@@ -116,11 +117,11 @@ fun EvidenceScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     EvidenceField("Target Assay", "ALDH1 (LIT-PCBA AID 1030 • 10,000 pool)")
-                    EvidenceField("Active Scaffolds", "485 distinct active clusters (zero overlap)")
-                    EvidenceField("Quantum Execution", "LOCAL_STATEVECTOR (8 Qubits, depth 1)")
+                    EvidenceField("Active Scaffolds", "485 distinct active clusters (asserted 0% test overlap)")
+                    EvidenceField("Quantum Execution", "LOCAL_STATEVECTOR (8 Qubits, depth 1, gamma 0.25)")
                     EvidenceField("Optimization Engine", "OPT_LOCAL (QpiAI Opt LocalProvider)")
                     EvidenceField("QCloud Remote Status", "FAILED_SUBSCRIPTION_REQUIRED (Auth OK, HTTP 400)")
-                    EvidenceField("Shot Noise Fidelity", "Matches sqrt(k(1-k)/M) theory across 256-8192 shots")
+                    EvidenceField("Shot Noise Fidelity", "Matches sqrt(k(1-k)/M) bound across 256-8192 shots")
                     EvidenceField("Pre-trim Variable Count", "300 Candidates (2-level QUBO partitioning)")
                 }
             }
@@ -142,11 +143,11 @@ fun EvidenceScreen(
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    TestStatusRow("tests/test_claims.py", "10 / 10 Claims Match Exactly", true)
-                    TestStatusRow("scripts/check_secrets.py", "0 Secrets, 0 Windows Paths", true)
-                    TestStatusRow("tests/test_qubo_ising.py", "Ising <-> QUBO exact bijection (<1e-10)", true)
-                    TestStatusRow("scripts/verify_evidence.py", "All QCloud & Opt JSONs Re-verified", true)
-                    TestStatusRow("tests/test_data_integrity.py", "SHA-256 Manifest Validated", true)
+                    TestStatusRow("tests/test_claims.py", "10 / 10 Claims Match Exactly", "PASS")
+                    TestStatusRow("scripts/check_secrets.py", "0 Secrets, 0 Windows Paths", "PASS")
+                    TestStatusRow("tests/test_qubo_ising.py", "Ising <-> QUBO exact bijection (<1e-10)", "PASS")
+                    TestStatusRow("scripts/verify_evidence.py", "All QCloud & Opt JSONs Re-verified", "PASS")
+                    TestStatusRow("tests/test_data_integrity.py", "SHA-256 Manifest Validated", "PASS")
                 }
             }
         }
@@ -165,7 +166,7 @@ fun EvidenceScreen(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Every number in Iris reports and UI is bound to verified result files.",
                         style = MaterialTheme.typography.bodySmall,
@@ -248,113 +249,155 @@ fun EvidenceScreen(
         }
 
         item {
-            Spacer(modifier = Modifier.height(72.dp))
+            Spacer(modifier = Modifier.height(96.dp))
         }
     }
 }
 
 @Composable
 private fun EvidenceField(label: String, value: String) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(vertical = 5.dp)
     ) {
         Text(
-            text = label,
+            text = label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
+            fontSize = 9.5.sp,
+            letterSpacing = 0.5.sp,
             color = InkSecondary,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Bold
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = value,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.bodySmall,
             color = InkPrimary,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 12.sp,
+            lineHeight = 16.sp
         )
+        HorizontalDivider(modifier = Modifier.padding(top = 6.dp), color = HairlineBorder, thickness = 0.5.dp)
     }
 }
 
 @Composable
-private fun TestStatusRow(testName: String, detail: String, passed: Boolean) {
-    Row(
+private fun TestStatusRow(testName: String, detail: String, status: String) {
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(10.dp),
+        color = CodeBg,
+        border = BorderStroke(0.5.dp, HairlineBorder)
     ) {
-        Icon(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = "Pass",
-            tint = HitBadgeText,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = testName,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-                color = InkPrimary
-            )
-            Text(
-                text = detail,
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 9.sp,
-                color = InkSecondary
-            )
-        }
-        Surface(
-            shape = CircleShape,
-            color = HitBadgeBg
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "PASS",
-                modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                color = HitBadgeText
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Pass",
+                tint = HitBadgeText,
+                modifier = Modifier.size(18.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = testName,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 11.sp,
+                    color = InkPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = detail,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 9.5.sp,
+                    color = InkSecondary
+                )
+            }
+            Spacer(modifier = Modifier.width(6.dp))
+            Surface(
+                shape = CircleShape,
+                color = HitBadgeBg
+            ) {
+                Text(
+                    text = status,
+                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = HitBadgeText
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun ClaimRow(title: String, outcome: String, sourcePath: String) {
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(10.dp),
+        color = CodeBg,
+        border = BorderStroke(0.5.dp, HairlineBorder)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = InkPrimary
-            )
+        Column(modifier = Modifier.padding(10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    color = InkPrimary
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Surface(
+                    shape = CircleShape,
+                    color = HitBadgeBg
+                ) {
+                    Text(
+                        text = "AUDITED",
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = HitBadgeText
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(3.dp))
             Text(
                 text = outcome,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 color = HitBadgeText,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 11.5.sp
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Source: $sourcePath",
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 8.5.sp,
+                color = InkSecondary,
                 fontFamily = FontFamily.Monospace
             )
         }
-        Text(
-            text = "Source: $sourcePath",
-            style = MaterialTheme.typography.labelSmall,
-            fontSize = 8.5.sp,
-            color = InkSecondary,
-            fontFamily = FontFamily.Monospace
-        )
-        HorizontalDivider(modifier = Modifier.padding(top = 4.dp), color = HairlineBorder)
     }
 }

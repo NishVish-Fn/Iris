@@ -82,6 +82,7 @@ class MolFunnelRepository(private val context: Context) {
                     }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("MolFunnel", "Error parsing cached bundle", e)
                 cachedBundle = AppBundle()
             }
         }
