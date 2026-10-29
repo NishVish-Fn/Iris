@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.npy
+data/processed/*.npy
 .ipynb_checkpoints
 results/runs/
 data/raw/
