@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.data.MolFunnelRepository
 import com.parsec.molfunnel.model.AppBundle
 import com.parsec.molfunnel.ui.screens.*
+import com.parsec.molfunnel.ui.splash.AnimatedSplash
 import com.parsec.molfunnel.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -42,7 +43,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MolFunnelTheme {
-                MainApp(repository)
+                var showSplash by remember { mutableStateOf(true) }
+                if (showSplash) {
+                    AnimatedSplash(
+                        appName = "MolFunnel",
+                        tagline = "Quantum drug discovery, filtered.",
+                        onFinished = { showSplash = false }
+                    )
+                } else {
+                    MainApp(repository)
+                }
             }
         }
     }
