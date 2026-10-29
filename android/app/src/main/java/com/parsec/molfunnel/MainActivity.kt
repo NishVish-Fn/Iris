@@ -36,8 +36,7 @@ enum class NavigationTab(val title: String, val icon: ImageVector) {
     FUNNEL("Funnel", Icons.Default.FilterList),
     LEADS("Leads", Icons.Default.Science),
     LAB("Lab", Icons.Default.Tune),
-    RESULTS("Results", Icons.Default.BarChart),
-    EVIDENCE("Evidence", Icons.Default.Verified)
+    RESULTS("Results", Icons.Default.BarChart)
 }
 
 @Composable
@@ -88,7 +87,6 @@ fun MainApp(repository: MolFunnelRepository) {
                         1 -> NavigationTab.LEADS
                         2 -> NavigationTab.LAB
                         3 -> NavigationTab.RESULTS
-                        4 -> NavigationTab.EVIDENCE
                         else -> NavigationTab.FUNNEL
                     }
                 }
@@ -96,7 +94,6 @@ fun MainApp(repository: MolFunnelRepository) {
                 NavigationTab.LEADS -> LeadsScreen(bundle)
                 NavigationTab.LAB -> LabScreen(bundle, repository)
                 NavigationTab.RESULTS -> ResultsScreen(bundle)
-                NavigationTab.EVIDENCE -> EvidenceScreen(bundle)
             }
         }
     }
