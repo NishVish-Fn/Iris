@@ -122,7 +122,7 @@ fun HomeScreen(
 
                     Button(
                         onClick = { inWalkthrough = true },
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
@@ -140,7 +140,7 @@ fun HomeScreen(
 
                     OutlinedButton(
                         onClick = { onNavigateToTab(1) },
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
                             .height(48.dp)
@@ -227,7 +227,7 @@ fun HomeScreen(
                                     inWalkthrough = false
                                 }
                             },
-                            shape = CircleShape,
+                            shape = RoundedCornerShape(14.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = InkPrimary)
                         ) {
                             Text(

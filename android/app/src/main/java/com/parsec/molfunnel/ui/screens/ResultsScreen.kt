@@ -142,7 +142,7 @@ fun ResultsScreen(bundle: AppBundle) {
         item {
             ChartCard(
                 title = "Combinatorial Solver Benchmarks",
-                subtitle = "Runtime, energy minima, and optimality gap comparing QpiAI Opt to heuristics"
+                subtitle = "Energy minimization & runtime vs classical heuristics"
             ) {
                 OptSolverBenchmarkChart()
             }
@@ -152,7 +152,7 @@ fun ResultsScreen(bundle: AppBundle) {
         item {
             ChartCard(
                 title = "QML vs Classical Model Comparison",
-                subtitle = "Comprehensive multi-criteria benchmarks: ROC-AUC, novelty, PAINS clearance, and cost"
+                subtitle = "ROC-AUC, PR-AUC, scaffold novelty & cost benchmarks"
             ) {
                 ClassicalVsQmlModelBenchmark()
             }
@@ -161,8 +161,8 @@ fun ResultsScreen(bundle: AppBundle) {
         // 12. NEW: Best vs Least Successful Models Rectangle Graphs Comparison
         item {
             ChartCard(
-                title = "Best vs Least Successful Models (Rectangle Graphs)",
-                subtitle = "Empirical head-to-head rectangle comparison of top performers against least successful architectures across ROC-AUC, PR-AUC, and 6-Layered Checking"
+                title = "Best vs Least Successful Models",
+                subtitle = "Head-to-head performance across top & baseline architectures"
             ) {
                 BestVsLeastModelsRectangleComparisonSection()
             }
@@ -891,12 +891,12 @@ fun OptSolverBenchmarkChart() {
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
-                            shape = CircleShape,
+                            shape = RoundedCornerShape(6.dp),
                             color = if (s.isWinner) HitBadgeBg else ChipBg
                         ) {
                             Text(
                                 text = s.gap,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 8.5.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1102,12 +1102,12 @@ fun ClassicalVsQmlModelBenchmark() {
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
-                            shape = CircleShape,
+                            shape = RoundedCornerShape(6.dp),
                             color = if (m.isOurs) HitBadgeBg else ChipBg
                         ) {
                             Text(
                                 text = if (m.isOurs) "QUANTUM (+16.8%)" else "CLASSICAL",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 8.5.sp,
                                 textAlign = TextAlign.Center,
@@ -1462,12 +1462,12 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Surface(
-                                shape = CircleShape,
+                                shape = RoundedCornerShape(6.dp),
                                 color = tagColor
                             ) {
                                 Text(
                                     text = m.category,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 8.5.sp,
                                     textAlign = TextAlign.Center,
@@ -1606,10 +1606,10 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                         fontFamily = FontFamily.Serif,
                         fontWeight = FontWeight.Bold
                     )
-                    Surface(shape = CircleShape, color = HitBadgeBg) {
+                    Surface(shape = RoundedCornerShape(6.dp), color = HitBadgeBg) {
                         Text(
                             text = "6/6 COMPLIANT",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 8.5.sp,
                             fontWeight = FontWeight.Bold,
@@ -1629,53 +1629,63 @@ fun BestVsLeastModelsRectangleComparisonSection() {
                 )
 
                 layerStages.forEachIndexed { idx, title ->
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(vertical = 5.dp)
                     ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = HitBadgeBg,
-                            modifier = Modifier.size(20.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text("L${idx + 1}", color = HitBadgeText, fontSize = 8.5.sp, fontWeight = FontWeight.Bold)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Surface(
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = HitBadgeBg,
+                                    modifier = Modifier.size(18.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text("L${idx + 1}", color = HitBadgeText, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = InkPrimary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Surface(shape = RoundedCornerShape(4.dp), color = HitBadgeBg) {
+                                Text(
+                                    text = "PASS 100%",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = HitBadgeText
+                                )
                             }
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = title,
-                            modifier = Modifier.weight(0.50f),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         Box(
                             modifier = Modifier
-                                .weight(0.32f)
-                                .height(8.dp)
-                                .background(Color(0xFFF1F5F9), RoundedCornerShape(4.dp))
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(3.dp))
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .fillMaxHeight()
-                                    .background(HitBadgeText, RoundedCornerShape(4.dp))
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Surface(shape = CircleShape, color = HitBadgeBg) {
-                            Text(
-                                text = "100%",
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = HitBadgeText
+                                    .background(HitBadgeText, RoundedCornerShape(3.dp))
                             )
                         }
                     }

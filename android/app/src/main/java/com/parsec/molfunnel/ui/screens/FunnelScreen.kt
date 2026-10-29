@@ -166,22 +166,27 @@ fun FunnelScreen(bundle: AppBundle) {
                     ) {
                         Text(
                             text = "INTERACTIVE FUNNEL SCRUBBER",
+                            modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.labelSmall,
                             letterSpacing = 1.sp,
                             fontWeight = FontWeight.Bold,
-                            color = InkSecondary
+                            color = InkSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Surface(
-                            shape = CircleShape,
+                            shape = RoundedCornerShape(6.dp),
                             color = ChipBg
                         ) {
                             Text(
                                 text = activeStage.tool,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
-                                fontSize = 10.sp,
+                                fontSize = 9.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = InkPrimary
+                                color = InkPrimary,
+                                maxLines = 1
                             )
                         }
                     }
@@ -541,22 +546,26 @@ fun DetailedStageCard(
             ) {
                 Text(
                     text = stageNum,
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = InkSecondary,
-                    letterSpacing = 1.sp
+                    letterSpacing = 1.sp,
+                    maxLines = 1
                 )
+                Spacer(modifier = Modifier.width(6.dp))
                 Surface(
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(6.dp),
                     color = ChipBg
                 ) {
                     Text(
                         text = tool,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        fontSize = 10.sp,
+                        fontSize = 9.5.sp,
                         color = toolTagColor,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
                     )
                 }
             }
@@ -648,14 +657,14 @@ fun FunnelFiltrationDecayChart() {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Surface(
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(6.dp),
                     color = HitBadgeBg
                 ) {
                     Text(
                         text = "99.97% LOG TAPER",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        fontSize = 10.sp,
+                        fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         color = HitBadgeText,
                         maxLines = 1

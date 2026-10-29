@@ -69,7 +69,7 @@ fun LeadsScreen(bundle: AppBundle) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(ChipBg, CircleShape)
+                    .background(ChipBg, RoundedCornerShape(12.dp))
                     .padding(4.dp)
             ) {
                 TabButton(
@@ -104,7 +104,7 @@ fun TabButton(text: String, selected: Boolean, modifier: Modifier, onClick: () -
         modifier = modifier
             .height(36.dp)
             .clickable { onClick() },
-        shape = CircleShape,
+        shape = RoundedCornerShape(10.dp),
         color = if (selected) InkPrimary else Color.Transparent
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -150,7 +150,7 @@ fun LeadCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            // Header: Title and Status Badge
+            // Header: Title and Badges
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -162,18 +162,33 @@ fun LeadCard(
                     fontFamily = FontFamily.Serif
                 )
 
-                // Clean Status Badge
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = HitBadgeBg
-                ) {
-                    Text(
-                        text = if (isFinalLead) "FINALIST LEAD" else "TOP-20 CANDIDATE",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = HitBadgeText
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = InkPrimary
+                    ) {
+                        Text(
+                            text = "NOVEL SCAFFOLD",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = CardBg
+                        )
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = HitBadgeBg
+                    ) {
+                        Text(
+                            text = if (isFinalLead) "FINALIST" else "TOP-20",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = HitBadgeText
+                        )
+                    }
                 }
             }
 
@@ -212,15 +227,71 @@ fun LeadCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Plain-Text Molecule Spec & Bill
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                InfoRow("Compound ID", "PubChem SID: ${lead.pubchemSid}")
-                InfoRow("Potency Odds", "${(lead.pActive * 100).toInt()}% estimated active")
-                InfoRow("Procurement Bill", "₹${lead.costInr.toInt()} (${lead.costSource})")
-                InfoRow("Synthesis Score", "${String.format("%.1f", lead.saScore)} / 10 (Easy to produce)")
-                InfoRow("Building-Block Cost", "₹${if (lead.buildingBlockCost > 0 && lead.buildingBlockCost < 1000) lead.buildingBlockCost.toInt() else (lead.costInr * 0.4).toInt()} (Estimated)")
-                InfoRow("Chemical Family", "100% Novel Scaffold")
-                InfoRow("Funnel Cut", "Stage 1 (#${lead.stage1Rank}) → Stage 2 (#${lead.stage2Rank}) → Cut #${displayRank}")
+            // Visual Metric Badges
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    color = CodeBg,
+                    border = BorderStroke(1.dp, HairlineBorder)
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text("PROCUREMENT", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("₹${lead.costInr.toInt()}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = InkPrimary)
+                        Text(lead.costSource, style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary)
+                    }
+                }
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    color = HitBadgeBg,
+                    border = BorderStroke(1.dp, HitBadgeBg)
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text("P(ACTIVE)", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = HitBadgeText, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("${(lead.pActive * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = HitBadgeText)
+                        Text("± ${(lead.sigma * 100).toInt()}% conf", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = HitBadgeText)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    color = CodeBg,
+                    border = BorderStroke(1.dp, HairlineBorder)
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text("SYNTHESIS (SA)", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("${String.format("%.1f", lead.saScore)} / 10", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = InkPrimary)
+                        Text("Easy Precursors", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = Color(0xFF27AE60))
+                    }
+                }
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    color = CodeBg,
+                    border = BorderStroke(1.dp, HairlineBorder)
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text("PUBCHEM SID", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(lead.pubchemSid, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = InkPrimary)
+                        Text("Stage 1 # ${lead.stage1Rank}", style = MaterialTheme.typography.labelSmall, fontSize = 8.sp, color = InkSecondary)
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -250,55 +321,35 @@ fun LeadCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Action Badges with SpaceBetween and Bounded Text
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Button(
+                onClick = { showQuoteDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (quoteRequested) HitBadgeBg else InkPrimary
+                ),
+                border = BorderStroke(1.dp, if (quoteRequested) HitBadgeText else InkPrimary)
             ) {
-                Surface(
-                    shape = CircleShape,
-                    color = InkPrimary
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Text(
-                        text = "NOVEL SCAFFOLD",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = CardBg
-                    )
-                }
-
-                Surface(
-                    modifier = Modifier.clickable {
-                        showQuoteDialog = true
-                    },
-                    shape = CircleShape,
-                    color = if (quoteRequested) HitBadgeBg else ChipBg,
-                    border = BorderStroke(1.dp, if (quoteRequested) HitBadgeText else HairlineBorder)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        if (quoteRequested) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "Quote Confirmed",
-                                tint = HitBadgeText,
-                                modifier = Modifier.size(13.dp)
-                            )
-                        }
-                        Text(
-                            text = if (quoteRequested) "QUOTE CONFIRMED (₹${lead.costInr.toInt()})" else "REQUEST VENDOR RFQ",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (quoteRequested) HitBadgeText else InkPrimary
+                    if (quoteRequested) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Confirmed",
+                            tint = HitBadgeText,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
+                    Text(
+                        text = if (quoteRequested) "QUOTE CONFIRMED (₹${lead.costInr.toInt()})" else "REQUEST VENDOR PROCUREMENT RFQ",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (quoteRequested) HitBadgeText else CardBg
+                    )
                 }
             }
 

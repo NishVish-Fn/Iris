@@ -126,7 +126,7 @@ fun MainApp(repository: MolFunnelRepository) {
 
                     // Live QpiAI Cloud Status Pill
                     Surface(
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(8.dp),
                         color = if (isBackendOnline) Color(0xFFE8F8F5) else ChipBg,
                         border = androidx.compose.foundation.BorderStroke(1.dp, if (isBackendOnline) Color(0xFF27AE60) else HairlineBorder)
                     ) {

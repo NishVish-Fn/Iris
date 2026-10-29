@@ -78,7 +78,7 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                             color = InkSecondary
                         )
                         Surface(
-                            shape = CircleShape,
+                            shape = RoundedCornerShape(6.dp),
                             color = if (isBackendOnline) Color(0xFF27AE60) else ChipBg
                         ) {
                             Text(
@@ -103,9 +103,9 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = if (isBackendOnline)
-                            "Live QpiAI Quantum and QpiAI Opt cloud environments connected. Real-time quantum feature maps, finite-shot simulation, and combinatorial portfolio optimization active."
+                            "Live QpiAI Quantum & Opt Cloud active. Real-time quantum kernels & portfolio solver."
                         else
-                            "Offline Mode: Operating with pre-computed, verified 10,000-compound Seed 11 benchmark run. All metrics, circuits, and lead selections are cached and cryptographically audited.",
+                            "Offline Mode: Operating with verified 10,000-compound benchmark run.",
                         style = MaterialTheme.typography.bodySmall,
                         color = InkSecondary
                     )
@@ -129,7 +129,7 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(ChipBg, CircleShape)
+                    .background(ChipBg, RoundedCornerShape(12.dp))
                     .padding(4.dp)
             ) {
                 TabButton(text = "SOLVER", selected = selectedLabTab == 0, modifier = Modifier.weight(1f)) { selectedLabTab = 0 }
@@ -270,14 +270,14 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Surface(shape = CircleShape, color = ChipBg, border = BorderStroke(1.dp, InkPrimary)) {
-                    Text("✓ PAINS Alert Filter (0 Alerts)", modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Surface(shape = RoundedCornerShape(8.dp), color = HitBadgeBg, border = BorderStroke(1.dp, HitBadgeText)) {
+                    Text("✓ PAINS: 0", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = HitBadgeText)
                 }
-                Surface(shape = CircleShape, color = ChipBg, border = BorderStroke(1.dp, InkPrimary)) {
-                    Text("✓ Lipinski Rule of 5 (0 Violations)", modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Surface(shape = RoundedCornerShape(8.dp), color = HitBadgeBg, border = BorderStroke(1.dp, HitBadgeText)) {
+                    Text("✓ Lipinski: Pass", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = HitBadgeText)
                 }
-                Surface(shape = CircleShape, color = ChipBg, border = BorderStroke(1.dp, InkPrimary)) {
-                    Text("✓ Veber Oral Permeability (TPSA ≤ 140)", modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Surface(shape = RoundedCornerShape(8.dp), color = HitBadgeBg, border = BorderStroke(1.dp, HitBadgeText)) {
+                    Text("✓ Veber: Pass", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = HitBadgeText)
                 }
             }
 
@@ -299,7 +299,7 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
                     }
                 },
                 enabled = !isLoading,
-                shape = CircleShape,
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
@@ -548,7 +548,7 @@ fun QuantumProbeSection(repository: MolFunnelRepository, bundle: AppBundle) {
             Text("2. QUANTUM PROBE", style = MaterialTheme.typography.labelSmall)
             Text("Inspect Feature Angles & Kernel", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
             Spacer(modifier = Modifier.height(6.dp))
-            Text("Select any candidate molecule below to map its 8 physical features onto the quantum circuit and measure its shape similarity against active cancer cures.", style = MaterialTheme.typography.bodyMedium)
+            Text("Map 8 molecular features into quantum Hilbert space & measure fidelity kernel.", style = MaterialTheme.typography.bodyMedium)
 
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -615,7 +615,7 @@ fun QuantumProbeSection(repository: MolFunnelRepository, bundle: AppBundle) {
                     }
                 },
                 enabled = !isLoading,
-                shape = CircleShape,
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
@@ -654,9 +654,8 @@ fun QuantumProbeSection(repository: MolFunnelRepository, bundle: AppBundle) {
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Surface(
-                                shape = CircleShape,
-                                color = ChipBg,
-                                modifier = Modifier.weight(0.45f)
+                                shape = RoundedCornerShape(6.dp),
+                                color = ChipBg
                             ) {
                                 Text(
                                     text = p.source,
@@ -1183,14 +1182,14 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
                                     }
                                 } else {
                                     Surface(
-                                        shape = CircleShape,
+                                        shape = RoundedCornerShape(6.dp),
                                         color = if (isSelected) InkPrimary else ChipBg
                                     ) {
                                         Text(
                                             text = if (isSelected) "✓ PICKED" else "+ SELECT",
-                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontSize = 10.sp,
+                                            fontSize = 9.5.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = if (isSelected) CardBg else InkPrimary
                                         )
@@ -1209,7 +1208,7 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
                 Button(
                     onClick = { revealed = true },
                     enabled = selectedCards.size == 3,
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
@@ -1226,7 +1225,7 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
                         revealed = false
                         selectedCards = emptySet()
                     },
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
@@ -1379,7 +1378,7 @@ fun ModelTestAndLayeredCheckingSection(repository: MolFunnelRepository, bundle: 
             Text("Evaluate Candidate Compounds", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                "Run chemical SMILES through any benchmarked QML or Classical model while keeping the 6-layer qualification pipeline 100% active.",
+                "Score chemical SMILES through QML / Classical models with 6-layer checks.",
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -1455,7 +1454,7 @@ fun ModelTestAndLayeredCheckingSection(repository: MolFunnelRepository, bundle: 
                     }
                 },
                 enabled = !isLoading,
-                shape = CircleShape,
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
                 modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
@@ -1529,9 +1528,9 @@ fun ModelTestAndLayeredCheckingSection(repository: MolFunnelRepository, bundle: 
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Surface(
-                                    shape = CircleShape,
+                                    shape = RoundedCornerShape(6.dp),
                                     color = if (check.passed) HitBadgeBg else NotHitBadgeBg,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(22.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(
@@ -1573,12 +1572,7 @@ fun ModelTestAndLayeredCheckingSection(repository: MolFunnelRepository, bundle: 
                                         fontFamily = FontFamily.Monospace,
                                         color = InkPrimary
                                     )
-                                    Text(
-                                        text = check.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontSize = 9.sp,
-                                        color = InkSecondary
-                                    )
+
                                 }
                             }
                         }
