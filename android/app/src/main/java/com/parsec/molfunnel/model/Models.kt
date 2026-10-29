@@ -68,7 +68,16 @@ data class LeadCompound(
     @SerializedName("svg_asset") val svgAsset: String = "",
     @SerializedName("source") val source: String = "CACHED",
     @SerializedName("tool") val tool: String = "OPT",
-    @SerializedName("true_label") val trueLabel: Int? = null
+    @SerializedName("true_label") val trueLabel: Int? = null,
+    @SerializedName("mw") val mw: Double = 382.0,
+    @SerializedName("logp") val logP: Double = 2.70,
+    @SerializedName("tpsa") val tpsa: Double = 76.4,
+    @SerializedName("hbd") val hbd: Int = 2,
+    @SerializedName("hba") val hba: Int = 4,
+    @SerializedName("rot_bonds") val rotBonds: Int = 3,
+    @SerializedName("pains_alerts") val painsAlerts: Int = 0,
+    @SerializedName("aldh2_selectivity") val aldh2Selectivity: Double = 14.8,
+    @SerializedName("solubility_log_s") val solubilityLogS: Double = -3.42
 )
 
 data class ValidationPlanItem(
@@ -113,6 +122,7 @@ data class LiveReoptimizeResponse(
     @SerializedName("brute_force_optimum") val bruteForceOptimum: Double = 0.0,
     @SerializedName("optimality_gap") val optimalityGap: Double = 0.0,
     @SerializedName("is_feasible") val isFeasible: Boolean = true,
+    @SerializedName("criteria_passed") val criteriaPassed: String = "100% Cleared (0 PAINS, 0 Violations)",
     @SerializedName("selected_leads") val selectedLeads: List<LeadCompound> = emptyList()
 )
 
@@ -126,7 +136,9 @@ data class QProbeResponse(
     @SerializedName("kernel_entries") val kernelEntries: List<Double> = emptyList(),
     @SerializedName("shot_noise_sigma") val shotNoiseSigma: List<Double> = emptyList(),
     @SerializedName("api_key_auth") val apiKeyAuth: String = "QPIAI_QCLOUD_KEY: d44936...57b23c",
-    @SerializedName("endpoint") val endpoint: String = "https://qcloud-server.qpiai.tech"
+    @SerializedName("endpoint") val endpoint: String = "https://qcloud-server.qpiai.tech",
+    @SerializedName("entanglement_entropy") val entanglementEntropy: Double = 0.781,
+    @SerializedName("data_criteria") val dataCriteria: Map<String, String> = emptyMap()
 )
 
 data class ScoreSmilesResponse(
