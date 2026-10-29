@@ -289,18 +289,24 @@ fun FunnelScreen(bundle: AppBundle) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Scrubber Slider with Stage Points
+                    // Scrubber Slider with Non-Overlapping Stage Points
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        stages.forEach { stage ->
+                        stages.forEachIndexed { idx, stage ->
                             Text(
                                 text = stage.shortLabel,
+                                modifier = Modifier.weight(1f),
+                                textAlign = when (idx) {
+                                    0 -> TextAlign.Start
+                                    stages.size - 1 -> TextAlign.End
+                                    else -> TextAlign.Center
+                                },
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (stage.index == currentStageInt) FontWeight.Bold else FontWeight.Normal,
-                                color = if (stage.index == currentStageInt) InkPrimary else InkSecondary
+                                color = if (stage.index == currentStageInt) InkPrimary else InkSecondary,
+                                maxLines = 1
                             )
                         }
                     }
@@ -586,21 +592,23 @@ fun StageBillRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 3.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.Top
     ) {
         Text(
             text = label,
-            modifier = Modifier.weight(0.44f),
+            modifier = Modifier.weight(0.40f),
             style = MaterialTheme.typography.bodySmall,
+            lineHeight = 18.sp,
             color = InkSecondary
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = value,
-            modifier = Modifier.weight(0.56f),
+            modifier = Modifier.weight(0.60f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodySmall,
+            lineHeight = 18.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Monospace,
             color = InkPrimary

@@ -247,8 +247,12 @@ fun LeadCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Chips
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Action Badges with SpaceBetween and Bounded Text
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Surface(
                     shape = CircleShape,
                     color = InkPrimary
@@ -257,6 +261,8 @@ fun LeadCard(
                         text = "NOVEL SCAFFOLD",
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
                         color = CardBg
                     )
                 }
@@ -270,7 +276,7 @@ fun LeadCard(
                     border = BorderStroke(1.dp, if (quoteRequested) HitBadgeText else HairlineBorder)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -283,8 +289,9 @@ fun LeadCard(
                             )
                         }
                         Text(
-                            text = if (quoteRequested) "QUOTE CONFIRMED (₹${lead.costInr.toInt()})" else "REQUEST VENDOR QUOTE",
+                            text = if (quoteRequested) "QUOTE CONFIRMED (₹${lead.costInr.toInt()})" else "REQUEST VENDOR RFQ",
                             style = MaterialTheme.typography.labelSmall,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (quoteRequested) HitBadgeText else InkPrimary
                         )

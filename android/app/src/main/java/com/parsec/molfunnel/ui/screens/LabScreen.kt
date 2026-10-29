@@ -211,12 +211,14 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // 1-Touch Presets
+            // 1-Touch Presets with Horizontal Scroll (No text wrapping/overlap)
             Text("Quick Presets (Tap to Test):", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(6.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FilterChip(
                     selected = beta == 0.5f && budget == 500f && eta == 1.0f,
@@ -230,11 +232,6 @@ fun ReSolveWithOptSection(repository: MolFunnelRepository, bundle: AppBundle) {
                     label = { Text("High Exploration", style = MaterialTheme.typography.labelSmall) },
                     colors = FilterChipDefaults.filterChipColors(selectedContainerColor = InkPrimary, selectedLabelColor = CardBg)
                 )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
                 FilterChip(
                     selected = budget == 250f,
                     onClick = { beta = 0.2f; lambdaDiv = 4.0f; eta = 0.5f; budget = 250f },
@@ -1029,110 +1026,115 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // 8 Candidate Cards in 2 columns
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                candidates.chunked(2).forEachIndexed { rowIndex, rowItems ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+            // 8 Candidate Cards (Full-Width, Non-Overlapping Layout)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                candidates.forEachIndexed { index, compound ->
+                    val isSelected = selectedCards.contains(index)
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = !revealed) {
+                                if (selectedCards.contains(index)) {
+                                    selectedCards = selectedCards - index
+                                } else if (selectedCards.size < 3) {
+                                    selectedCards = selectedCards + index
+                                }
+                            },
+                        shape = RoundedCornerShape(14.dp),
+                        color = when {
+                            revealed && compound.isTrueActive -> Color(0xFFE8F8F5)
+                            revealed && !compound.isTrueActive -> Color(0xFFFBF2F2)
+                            isSelected -> ChipBg
+                            else -> CardBg
+                        },
+                        border = BorderStroke(
+                            width = if (isSelected || revealed) 2.dp else 1.dp,
+                            color = when {
+                                revealed && compound.isTrueActive -> Color(0xFF27AE60)
+                                revealed && !compound.isTrueActive -> Color(0xFFE74C3C)
+                                isSelected -> InkPrimary
+                                else -> HairlineBorder
+                            }
+                        )
                     ) {
-                        rowItems.forEachIndexed { colIndex, compound ->
-                            val index = rowIndex * 2 + colIndex
-                            val isSelected = selectedCards.contains(index)
-
-                            Surface(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable(enabled = !revealed) {
-                                        if (selectedCards.contains(index)) {
-                                            selectedCards = selectedCards - index
-                                        } else if (selectedCards.size < 3) {
-                                            selectedCards = selectedCards + index
-                                        }
-                                    },
-                                shape = RoundedCornerShape(16.dp),
-                                color = when {
-                                    revealed && compound.isTrueActive -> Color(0xFFE8F8F5)
-                                    revealed && !compound.isTrueActive -> Color(0xFFFBF2F2)
-                                    isSelected -> ChipBg
-                                    else -> CardBg
-                                },
-                                border = BorderStroke(
-                                    width = if (isSelected || revealed) 2.dp else 1.dp,
-                                    color = when {
-                                        revealed && compound.isTrueActive -> Color(0xFF27AE60)
-                                        revealed && !compound.isTrueActive -> Color(0xFFE74C3C)
-                                        isSelected -> InkPrimary
-                                        else -> HairlineBorder
-                                    }
-                                )
-                            ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "Candidate #${compound.id}",
-                                            modifier = Modifier.weight(0.6f),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = InkPrimary
-                                        )
-                                        Text(
-                                            text = "₹${compound.costInr.toInt()}",
-                                            modifier = Modifier.weight(0.4f),
-                                            textAlign = TextAlign.End,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            fontFamily = FontFamily.Monospace,
-                                            color = InkPrimary
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(0.65f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = compound.scaffoldName,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Medium,
+                                        text = "Candidate #${compound.id}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
                                         color = InkPrimary
                                     )
+                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "SID: ${compound.pubchemSid}",
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 11.sp,
+                                        fontSize = 10.sp,
                                         color = InkSecondary
                                     )
-                                    Text(
-                                        text = "Predicted: ${(compound.pActive * 100).toInt()}% active",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 11.sp,
-                                        color = InkSecondary
-                                    )
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = compound.scaffoldName,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = InkPrimary
+                                )
+                                Text(
+                                    text = "Predicted: ${(compound.pActive * 100).toInt()}% active",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 11.sp,
+                                    color = InkSecondary
+                                )
+                            }
 
-                                    Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
 
-                                    if (revealed) {
-                                        Surface(
-                                            shape = RoundedCornerShape(6.dp),
-                                            color = if (compound.isTrueActive) Color(0xFF27AE60) else Color(0xFFE74C3C)
-                                        ) {
-                                            Text(
-                                                text = if (compound.isTrueActive) "★ ACTIVE CURE" else "✕ INACTIVE",
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontSize = 10.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.White
-                                            )
-                                        }
-                                    } else {
+                            Column(
+                                modifier = Modifier.weight(0.35f),
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                Text(
+                                    text = "₹${compound.costInr.toInt()}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = InkPrimary
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                if (revealed) {
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = if (compound.isTrueActive) Color(0xFF27AE60) else Color(0xFFE74C3C)
+                                    ) {
                                         Text(
-                                            text = if (isSelected) "✓ SELECTED" else "+ TAP TO SELECT",
+                                            text = if (compound.isTrueActive) "★ ACTIVE" else "✕ INACTIVE",
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (isSelected) InkPrimary else InkSecondary
+                                            color = Color.White
+                                        )
+                                    }
+                                } else {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = if (isSelected) InkPrimary else ChipBg
+                                    ) {
+                                        Text(
+                                            text = if (isSelected) "✓ PICKED" else "+ SELECT",
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isSelected) CardBg else InkPrimary
                                         )
                                     }
                                 }

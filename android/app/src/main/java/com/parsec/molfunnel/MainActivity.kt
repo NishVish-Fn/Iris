@@ -7,6 +7,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,6 +84,74 @@ fun MainApp(repository: MolFunnelRepository) {
     }
 
     Scaffold(
+        topBar = {
+            Surface(
+                color = CanvasBg,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(R.drawable.app_logo),
+                            contentDescription = "Iris Logo",
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(1.dp, HairlineBorder, RoundedCornerShape(8.dp))
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "IRIS",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 2.sp,
+                                color = InkPrimary
+                            )
+                            Text(
+                                text = "Quantum Drug Funnel",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 10.sp,
+                                color = InkSecondary
+                            )
+                        }
+                    }
+
+                    // Live QpiAI Cloud Status Pill
+                    Surface(
+                        shape = CircleShape,
+                        color = if (isBackendOnline) Color(0xFFE8F8F5) else ChipBg,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, if (isBackendOnline) Color(0xFF27AE60) else HairlineBorder)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(if (isBackendOnline) Color(0xFF27AE60) else InkSecondary, CircleShape)
+                            )
+                            Text(
+                                text = if (isBackendOnline) "QpiAI Online" else "Offline Local",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isBackendOnline) Color(0xFF27AE60) else InkSecondary
+                            )
+                        }
+                    }
+                }
+            }
+        },
         bottomBar = {
             AppleLiquidGlassBottomBar(
                 selectedTab = selectedTab,
