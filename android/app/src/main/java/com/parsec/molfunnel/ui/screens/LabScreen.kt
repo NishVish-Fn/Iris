@@ -19,7 +19,6 @@ import com.parsec.molfunnel.data.MolFunnelRepository
 import com.parsec.molfunnel.model.AppBundle
 import com.parsec.molfunnel.model.LiveReoptimizeResponse
 import com.parsec.molfunnel.model.QProbeResponse
-import com.parsec.molfunnel.model.ScoreSmilesResponse
 import com.parsec.molfunnel.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -57,16 +56,14 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
             ) {
                 TabButton(text = "OPT SOLVER", selected = selectedLabTab == 0, modifier = Modifier.weight(1f)) { selectedLabTab = 0 }
                 TabButton(text = "Q-PROBE", selected = selectedLabTab == 1, modifier = Modifier.weight(1f)) { selectedLabTab = 1 }
-                TabButton(text = "TRY SMILES", selected = selectedLabTab == 2, modifier = Modifier.weight(1f)) { selectedLabTab = 2 }
-                TabButton(text = "SCREENER GAME", selected = selectedLabTab == 3, modifier = Modifier.weight(1f)) { selectedLabTab = 3 }
+                TabButton(text = "SCREENER GAME", selected = selectedLabTab == 2, modifier = Modifier.weight(1f)) { selectedLabTab = 2 }
             }
         }
 
         when (selectedLabTab) {
             0 -> item { ReSolveWithOptSection(repository, bundle) }
             1 -> item { QuantumProbeSection(repository, bundle) }
-            2 -> item { TryOwnMoleculeSection(repository) }
-            3 -> item { BeTheScreenerGameSection(bundle) }
+            2 -> item { BeTheScreenerGameSection(bundle) }
         }
     }
 }
@@ -311,78 +308,6 @@ fun QuantumProbeSection(repository: MolFunnelRepository, bundle: AppBundle) {
 }
 
 @Composable
-fun TryOwnMoleculeSection(repository: MolFunnelRepository) {
-    var inputSmiles by remember { mutableStateOf("CC(=O)Nc1ccc(O)cc1") }
-    var scoreResult by remember { mutableStateOf<ScoreSmilesResponse?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = CardBg)
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text("3. TRY YOUR OWN MOLECULE", style = MaterialTheme.typography.labelSmall)
-            Text("Score Arbitrary SMILES", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
-            Spacer(modifier = Modifier.height(6.dp))
-            Text("Type or paste any chemical SMILES. The backend validates with RDKit, computes quantum kernel prediction, and tests applicability domain.", style = MaterialTheme.typography.bodyMedium)
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = inputSmiles,
-                onValueChange = { inputSmiles = it },
-                label = { Text("Enter SMILES string") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                textStyle = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Preset examples
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                TextButton(onClick = { inputSmiles = "CC(=O)Nc1ccc(O)cc1" }) { Text("Paracetamol", style = MaterialTheme.typography.labelSmall) }
-                TextButton(onClick = { inputSmiles = "CC(=O)Oc1ccccc1C(=O)O" }) { Text("Aspirin", style = MaterialTheme.typography.labelSmall) }
-                TextButton(onClick = { inputSmiles = "c1ccc(COc2ccc3ccccc3c2)cc1" }) { Text("Lead #1", style = MaterialTheme.typography.labelSmall) }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = {
-                    isLoading = true
-                    scope.launch {
-                        scoreResult = repository.liveScoreSmiles(inputSmiles)
-                        isLoading = false
-                    }
-                },
-                enabled = !isLoading,
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = InkPrimary),
-                modifier = Modifier.fillMaxWidth().height(48.dp)
-            ) {
-                Text(if (isLoading) "CALCULATING SIMULATION..." else "CALCULATE RESULT & RUN SIMULATION", color = CardBg, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-            }
-
-            if (scoreResult != null) {
-                val s = scoreResult!!
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = HairlineBorder)
-                Spacer(modifier = Modifier.height(10.dp))
-
-                InfoRow("Canonical SMILES", s.canonicalSmiles)
-                InfoRow("Predicted P(active)", "${String.format("%.4f", s.pActive)} ± ${String.format("%.4f", s.sigma)}")
-                InfoRow("Estimated Cost", "₹${s.estimatedCost.toInt()} (Tier A CoPriNet)")
-                InfoRow("Scaffold Novelty", "${String.format("%.3f", s.noveltyScore)}")
-                InfoRow("Outside Domain Warning", if (s.outsideDomainWarning) "WARNING: OUTSIDE DOMAIN" else "WITHIN ALDH1 DOMAIN")
-            }
-        }
-    }
-}
-
-@Composable
 fun BeTheScreenerGameSection(bundle: AppBundle) {
     var revealed by remember { mutableStateOf(false) }
     var selectedCards by remember { mutableStateOf(setOf<Int>()) }
@@ -397,7 +322,7 @@ fun BeTheScreenerGameSection(bundle: AppBundle) {
         colors = CardDefaults.cardColors(containerColor = CardBg)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text("4. BE THE SCREENER (BENCHMARK GAME)", style = MaterialTheme.typography.labelSmall)
+            Text("3. BE THE SCREENER (BENCHMARK GAME)", style = MaterialTheme.typography.labelSmall)
             Text("Human vs Quantum vs Classical", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
             Spacer(modifier = Modifier.height(6.dp))
             Text("You have a fixed budget. Select 3 compounds from 12 candidates based on predicted P and cost, then tap 'REVEAL TRUTH' to see who won!", style = MaterialTheme.typography.bodyMedium)
