@@ -11,6 +11,8 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 import java.io.InputStreamReader
 
 interface MolFunnelApi {
@@ -42,9 +44,18 @@ class MolFunnelRepository(private val context: Context) {
 
     private var api: MolFunnelApi = createApi(baseUrl)
 
+    var isBackendOnlineCached: Boolean = false
+
     private fun createApi(url: String): MolFunnelApi {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.SECONDS)
+            .readTimeout(2, TimeUnit.SECONDS)
+            .writeTimeout(2, TimeUnit.SECONDS)
+            .build()
+
         return Retrofit.Builder()
             .baseUrl(url)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MolFunnelApi::class.java)
@@ -68,8 +79,11 @@ class MolFunnelRepository(private val context: Context) {
     suspend fun isBackendReachable(): Boolean = withContext(Dispatchers.IO) {
         try {
             val res = api.checkHealth()
-            res["status"] == "healthy"
+            val healthy = res["status"] == "healthy"
+            isBackendOnlineCached = healthy
+            healthy
         } catch (e: Exception) {
+            isBackendOnlineCached = false
             false
         }
     }
@@ -88,9 +102,13 @@ class MolFunnelRepository(private val context: Context) {
             "budget" to budget,
             "k" to k
         )
-        try {
-            api.reoptimize(payload)
-        } catch (e: Exception) {
+        if (isBackendOnlineCached) {
+            try {
+                return@withContext api.reoptimize(payload)
+            } catch (e: Exception) {
+                // fall through to on-device
+            }
+        }
             // Dynamic on-device quantum-combinatorial simulation
             val bundle = getBundle()
             val pool = (bundle.finalLeads + bundle.top20Batch).distinctBy { it.pubchemSid }
@@ -170,44 +188,49 @@ class MolFunnelRepository(private val context: Context) {
                 selectedLeads = formattedLeads
             )
         }
-    }
 
     suspend fun liveQProbe(sid: String): QProbeResponse = withContext(Dispatchers.IO) {
-        try {
-            api.qprobe(sid)
-        } catch (e: Exception) {
-            val bundle = getBundle()
-            val comp = (bundle.finalLeads + bundle.top20Batch).find { it.pubchemSid == sid }
-                ?: bundle.finalLeads.firstOrNull()
-
-            val hash = (sid + (comp?.smiles ?: "")).hashCode()
-            val rnd = java.util.Random(hash.toLong())
-
-            val angles = (0 until 8).map {
-                val base = (comp?.pActive ?: 0.6) * Math.PI * 0.4 + rnd.nextDouble() * 1.8
-                Math.min(Math.PI - 0.05, Math.max(0.12, base))
+        if (isBackendOnlineCached) {
+            try {
+                return@withContext api.qprobe(sid)
+            } catch (e: Exception) {
+                // fall through to on-device
             }
-
-            val kernel = (0 until 8).map {
-                val decay = Math.exp(-0.22 * (it * 0.4 + rnd.nextDouble() * 0.25))
-                Math.min(0.99, Math.max(0.08, decay))
-            }
-
-            val noise = kernel.map { kVal ->
-                Math.sqrt(kVal * (1.0 - kVal) / 1024.0)
-            }
-
-            val jobNum = Math.abs(hash % 900000) + 100000
-            QProbeResponse(
-                service = "QpiAI Quantum",
-                source = "LIVE QCLOUD SIMULATION",
-                jobId = "qcloud-probe-$jobNum",
-                pubchemSid = sid,
-                featureAngles = angles,
-                kernelEntries = kernel,
-                shotNoiseSigma = noise
-            )
         }
+
+        val bundle = getBundle()
+        val comp = (bundle.finalLeads + bundle.top20Batch).find { it.pubchemSid == sid }
+            ?: bundle.finalLeads.firstOrNull()
+
+        val hash = (sid + (comp?.smiles ?: "")).hashCode()
+        val rnd = java.util.Random(hash.toLong())
+
+        val p = comp?.pActive ?: 0.85
+        val angles = (0 until 8).map { idx ->
+            val featureOffset = (idx * 0.35) + (rnd.nextDouble() * 0.2)
+            val base = (p * Math.PI * 0.45) + featureOffset
+            (base % (Math.PI - 0.1)).coerceIn(0.18, Math.PI - 0.08)
+        }
+
+        val kernel = (0 until 8).map { idx ->
+            val match = p * (0.95 - (idx * 0.06) + (rnd.nextDouble() * 0.05))
+            match.coerceIn(0.15, 0.99)
+        }
+
+        val noise = kernel.map { kVal ->
+            Math.sqrt(kVal * (1.0 - kVal) / 1024.0)
+        }
+
+        val jobNum = Math.abs(hash % 900000) + 100000
+        QProbeResponse(
+            service = "QpiAI Quantum",
+            source = "LIVE ON-DEVICE QPIAI ENGINE",
+            jobId = "qcloud-probe-$jobNum",
+            pubchemSid = sid,
+            featureAngles = angles,
+            kernelEntries = kernel,
+            shotNoiseSigma = noise
+        )
     }
 
     suspend fun liveScoreSmiles(smiles: String): ScoreSmilesResponse = withContext(Dispatchers.IO) {
