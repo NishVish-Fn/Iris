@@ -2,9 +2,7 @@ package com.parsec.molfunnel.ui.screens
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,17 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.parsec.molfunnel.R
 import com.parsec.molfunnel.model.AppBundle
 import com.parsec.molfunnel.ui.theme.*
 
@@ -82,44 +75,47 @@ fun HomeScreen(
                         color = InkSecondary
                     )
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Official Iris Quantum Benzene Logo
-                    Box(
+                    // Decorative Dotted Blob Canvas (Original Editorial Style)
+                    Canvas(
                         modifier = Modifier
-                            .size(150.dp)
-                            .shadow(10.dp, RoundedCornerShape(32.dp))
-                            .clip(RoundedCornerShape(32.dp))
-                            .background(Color.White)
-                            .border(1.dp, HairlineBorder, RoundedCornerShape(32.dp)),
-                        contentAlignment = Alignment.Center
+                            .size(140.dp)
+                            .padding(8.dp)
                     ) {
-                        Image(
-                            painter = painterResource(R.drawable.app_logo),
-                            contentDescription = "Iris Quantum Benzene Logo",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        )
+                        drawCircle(color = BlobDeep, radius = size.minDimension / 2.2f)
+                        val step = 14f
+                        for (x in 20..size.width.toInt() - 20 step step.toInt()) {
+                            for (y in 20..size.height.toInt() - 20 step step.toInt()) {
+                                val dx = x - size.width / 2
+                                val dy = y - size.height / 2
+                                if (dx * dx + dy * dy < (size.minDimension / 2.4f) * (size.minDimension / 2.4f)) {
+                                    drawCircle(color = CardBg, radius = 2f, center = Offset(x.toFloat(), y.toFloat()))
+                                }
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "From 10,000 molecules to 3",
+                        text = "From 10,000\nmolecules to 3",
                         style = MaterialTheme.typography.headlineLarge,
                         fontFamily = FontFamily.Serif,
                         fontWeight = FontWeight.Bold,
-                        color = InkPrimary
+                        color = InkPrimary,
+                        lineHeight = 36.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = "Quant-A-Maze 3.0, QML-04 | Team Parsec\nALDH1 Inhibition (AID 1030)",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = InkSecondary
+                        color = InkSecondary,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        lineHeight = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(28.dp))
