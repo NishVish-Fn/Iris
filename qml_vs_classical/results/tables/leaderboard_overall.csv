@@ -1,0 +1,5 @@
+Rank,Model,Family,Backend,ROC-AUC,PR-AUC,Accuracy,F1,Train Time (s)
+1,Classical: Classical: Random Forest,Classical ML,classical,"0.9846 [0.975, 0.994]","0.9738 [0.953, 0.995]","93.50% [92.0%, 95.0%]",0.9377,0.18
+2,Classical: Classical: Logistic Regression,Classical ML,classical,"0.9346 [0.915, 0.954]","0.9374 [0.919, 0.956]","84.00% [79.0%, 89.0%]",0.8509,0.00
+3,QML: ZZ-Ring Kernel SVM,Pure QML,qpiai_local_statevector,"0.9304 [0.910, 0.951]","0.9322 [0.909, 0.955]","84.00% [79.0%, 89.0%]",0.8492,0.00
+4,QML: Pure VQC (QNN),Pure QML,qpiai_local_statevector,"0.8248 [0.790, 0.860]","0.8291 [0.774, 0.884]","76.50% [71.0%, 82.0%]",0.7661,1.70

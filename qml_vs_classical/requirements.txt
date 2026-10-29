@@ -1,0 +1,16 @@
+# Benchmark Dependencies
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+scikit-learn>=1.2.0
+xgboost>=1.7.0
+lightgbm>=3.3.0
+optuna>=3.2.0
+reportlab>=3.6.0
+matplotlib>=3.7.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+pytest>=7.3.0
+# QpiAI Proprietary SDKs
+qpiai-quantum>=0.3.0
+qpiai-opt>=0.1.0

@@ -1,0 +1,9 @@
+dataset,seed,track,model_name,model_family,backend,train_time_sec,inf_latency_ms,accuracy,balanced_accuracy,roc_auc,pr_auc,f1,mcc,brier_score,ece
+D3_Synthetic_Moons,42,Track_A,QML: ZZ-Ring Kernel SVM,Pure QML,qpiai_local_statevector,0.003,0.01,0.79,0.79,0.9096,0.909,0.8073,0.5896,0.1335,0.1092
+D3_Synthetic_Moons,42,Track_A,QML: Pure VQC (QNN),Pure QML,qpiai_local_statevector,2.714,1.558,0.71,0.71,0.7896,0.7737,0.7238,0.4221,0.2498,0.2098
+D3_Synthetic_Moons,42,Track_A,Classical: Classical: Logistic Regression,Classical ML,classical,0.004,0.0,0.79,0.79,0.9148,0.9191,0.8108,0.5946,0.1314,0.0976
+D3_Synthetic_Moons,42,Track_A,Classical: Classical: Random Forest,Classical ML,classical,0.188,0.313,0.92,0.92,0.9748,0.953,0.9259,0.851,0.0606,0.0976
+D3_Synthetic_Moons,84,Track_A,QML: ZZ-Ring Kernel SVM,Pure QML,qpiai_local_statevector,0.004,0.01,0.89,0.89,0.9512,0.9553,0.8911,0.7802,0.0874,0.053
+D3_Synthetic_Moons,84,Track_A,QML: Pure VQC (QNN),Pure QML,qpiai_local_statevector,0.685,1.173,0.82,0.82,0.86,0.8844,0.8085,0.6447,0.2497,0.3197
+D3_Synthetic_Moons,84,Track_A,Classical: Classical: Logistic Regression,Classical ML,classical,0.003,0.0,0.89,0.89,0.9544,0.9557,0.8911,0.7802,0.087,0.0794
+D3_Synthetic_Moons,84,Track_A,Classical: Classical: Random Forest,Classical ML,classical,0.171,0.312,0.95,0.95,0.9944,0.9945,0.9495,0.9002,0.0331,0.0651

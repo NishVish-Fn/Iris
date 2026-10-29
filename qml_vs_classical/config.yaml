@@ -1,0 +1,66 @@
+# Configuration for qml_vs_classical benchmark suite
+
+experiment:
+  name: "qml_vs_classical_benchmark"
+  random_seeds: [11, 22, 33, 44, 55, 66, 77, 88, 99, 101]
+  smoke_seeds: [42, 84]
+  outer_folds: 5
+  inner_folds: 3
+  optuna_trials: 20
+  optuna_timeout_sec: 180
+  cache_dir: "results/cache"
+  raw_results_dir: "results/raw"
+  tables_dir: "results/tables"
+  figures_dir: "results/figures"
+  reports_dir: "reports"
+
+datasets:
+  d1_aldh1:
+    name: "ALDH1"
+    type: "molecular"
+    data_path: "../data/processed/aldh1_clean.parquet"
+    train_split_path: "../data/processed/train_seed11.parquet"
+    subsample_train: 400
+    subsample_test: 200
+    class_imbalance_weight: true
+  d2_breast_cancer:
+    name: "Breast_Cancer_Wisconsin"
+    type: "tabular"
+    subsample_train: 350
+    subsample_test: 150
+  d3_synthetic_moons:
+    name: "Synthetic_Moons"
+    type: "synthetic"
+    noise: 0.2
+    n_samples: 300
+    subsample_train: 200
+    subsample_test: 100
+  d4_mnist_binary:
+    name: "MNIST_0_vs_1"
+    type: "image"
+    digits: [0, 1]
+    subsample_train: 400
+    subsample_test: 200
+
+feature_tracks:
+  track_a:
+    name: "Matched_8_Features"
+    n_features: 8
+    feature_range: [0.0, 3.141592653589793] # [0, pi]
+    qubits_sweep: [4, 8, 10]
+  track_b:
+    name: "Best_Effort_Natural"
+    qml_max_qubits: 10
+
+quantum:
+  backend_preference: "qpiai_local_statevector" # options: qpiai_local_statevector, qpiai_qcloud
+  shots_sweep: [256, 1024, 8192]
+  ansatzes: ["zz_ring", "iqp", "full_zz", "pauli", "hardware_efficient"]
+  bandwidth_gammas: [0.05, 0.1, 0.25, 0.5, 1.0, 2.0]
+
+optimization_benchmark:
+  sizes: [20, 30, 50, 75, 100]
+  solvers: ["qpiai_opt_local", "qpiai_opt_cloud", "greedy", "simulated_annealing", "tabu", "brute_force"]
+  num_reads: [1, 2, 5, 10]
+  num_sweeps: [20, 50, 100, 200]
+  repeats: 20
