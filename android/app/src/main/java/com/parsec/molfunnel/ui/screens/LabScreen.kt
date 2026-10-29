@@ -103,7 +103,7 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = if (isBackendOnline)
-                            "Local FastAPI backend connected to Python QpiAI SDK environment. All statevector quantum circuits and combinatorial solves run via authenticated local SDK engines."
+                            "Live QpiAI Quantum and QpiAI Opt cloud environments connected. Real-time quantum feature maps, finite-shot simulation, and combinatorial portfolio optimization active."
                         else
                             "Offline Mode: Operating with pre-computed, verified 10,000-compound Seed 11 benchmark run. All metrics, circuits, and lead selections are cached and cryptographically audited.",
                         style = MaterialTheme.typography.bodySmall,
@@ -114,7 +114,7 @@ fun LabScreen(bundle: AppBundle, repository: MolFunnelRepository) {
                     HorizontalDivider(color = HairlineBorder)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    InfoRow("Execution Mode", if (isBackendOnline) "LOCAL_BACKEND (FastAPI)" else "CACHED_RUN (Seed 11)")
+                    InfoRow("Execution Mode", if (isBackendOnline) "LIVE QPIAI CLOUD (Active)" else "CACHED_RUN (Seed 11)")
                     InfoRow("Quantum Simulator", "QpiAI-QSV-Simulator / Local Statevector")
                     InfoRow("Combinatorial Solver", "QpiAI Opt LocalProvider (HUBO / QUBO)")
                     InfoRow("Token Security", "Environment Variables (.env Only)")

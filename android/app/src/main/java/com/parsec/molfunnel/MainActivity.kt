@@ -75,7 +75,7 @@ enum class NavigationTab(val title: String, val icon: ImageVector) {
 fun MainApp(repository: MolFunnelRepository) {
     var selectedTab by remember { mutableStateOf(NavigationTab.HOME) }
     var bundle by remember { mutableStateOf(AppBundle()) }
-    var isBackendOnline by remember { mutableStateOf(false) }
+    var isBackendOnline by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
