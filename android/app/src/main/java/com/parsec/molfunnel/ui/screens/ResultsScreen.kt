@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.model.AppBundle
@@ -114,51 +115,105 @@ fun ResultsScreen(bundle: AppBundle) {
 fun ScreeningReceiptCard(bundle: AppBundle) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = CardBg),
         border = BorderStroke(1.dp, InkPrimary)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
+            // Receipt Header Banner
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("LAB SCREENING RECEIPT", style = MaterialTheme.typography.labelSmall, letterSpacing = 2.sp, color = InkSecondary)
-                Surface(shape = RoundedCornerShape(8.dp), color = HitBadgeBg) {
-                    Text("VERIFIED BILL", modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall, color = HitBadgeText, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "RECEIPT #PARSEC-89412",
+                    style = MaterialTheme.typography.labelSmall,
+                    letterSpacing = 2.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    color = InkSecondary
+                )
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = HitBadgeBg,
+                    border = BorderStroke(1.dp, HitBadgeText)
+                ) {
+                    Text(
+                        text = "● VERIFIED BILL",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = HitBadgeText,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Text("Drug Discovery Bill & Performance", style = MaterialTheme.typography.titleLarge, fontFamily = FontFamily.Serif)
-            Text("Plain-text financial and hit accounting on the 10,000 test pool", style = MaterialTheme.typography.bodyMedium, color = InkSecondary)
 
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(color = HairlineBorder)
             Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Drug Discovery Financial Statement",
+                style = MaterialTheme.typography.titleLarge,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Itemized accounting on the 10,000 compound pool (ALDH1 Target)",
+                style = MaterialTheme.typography.bodySmall,
+                color = InkSecondary
+            )
 
+            Spacer(modifier = Modifier.height(14.dp))
+            Text(
+                text = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = FontFamily.Monospace,
+                color = HairlineBorder,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Non-overlapping weighted receipt rows
             BillRow("Initial Pool Screened", "10,000 molecules")
-            BillRow("Standard Hit Rate in Nature", "5.21% (1 in 20)")
-            BillRow("Stage 1 Shortlist (Quantum Filter)", "1,000 molecules (77 hits)")
-            BillRow("Stage 2 Batch (QpiAI Opt QUBO)", "50 molecules (6 hits)")
-            BillRow("Stage 2 Success Rate", "12.00% (More than 2x normal)")
-            BillRow("Stage 2 Accuracy Boost", "2.30x higher odds")
-            BillRow("Stage 2 Total Lab Bill", "₹5,442.85")
-            BillRow("Cost Per Useful Hit", "₹907.14 per hit")
-            BillRow("Finalist Leads Selected", "3 molecules (100% diverse)")
-            BillRow("Final 3 Leads Bill", "₹333.96")
+            BillRow("Natural Baseline Hit Rate", "5.21% (1 in 20)")
+            BillRow("Stage 1 Shortlist (Quantum)", "1,000 mols (77 hits)")
+            BillRow("Stage 2 Batch (QpiAI Opt)", "50 mols (6 hits)")
+            BillRow("Stage 2 Hit Rate", "12.00% (2.3x normal)")
+            BillRow("Stage 2 Odds Boost (EF)", "2.30x higher odds")
+            BillRow("Stage 2 Wet-Lab Spend", "₹5,442.85")
+            BillRow("Cost Per Useful Active", "₹907.14 / hit")
+            BillRow("Final Selected Leads", "3 leads (100% novel)")
+            BillRow("Final 3 Leads Bill", "₹333.96 (Paid)")
 
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(color = HairlineBorder)
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "==================================================",
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = FontFamily.Monospace,
+                color = InkPrimary,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
-                Text("ESTIMATED LAB SAVINGS", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                Text("₹6,050 saved vs. random testing", style = MaterialTheme.typography.labelMedium, color = HitBadgeText, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "ESTIMATED LAB SAVINGS",
+                    modifier = Modifier.weight(0.48f),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = InkPrimary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "₹6,050 vs. Random Screen",
+                    modifier = Modifier.weight(0.52f),
+                    textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = HitBadgeText,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
@@ -170,10 +225,24 @@ fun BillRow(item: String, amount: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 3.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.Top
     ) {
-        Text(item, style = MaterialTheme.typography.bodyMedium, color = InkSecondary)
-        Text(amount, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Monospace)
+        Text(
+            text = item,
+            modifier = Modifier.weight(0.52f),
+            style = MaterialTheme.typography.bodySmall,
+            color = InkSecondary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = amount,
+            modifier = Modifier.weight(0.48f),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+            color = InkPrimary
+        )
     }
 }
 

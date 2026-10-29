@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.parsec.molfunnel.model.AppBundle
@@ -452,17 +453,20 @@ fun FunnelLevelBar(
         Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = name,
+                    modifier = Modifier.weight(0.48f),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                     color = InkPrimary
                 )
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "$count molecules ($pct)",
+                    text = "$count ($pct)",
+                    modifier = Modifier.weight(0.52f),
+                    textAlign = TextAlign.End,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
@@ -570,17 +574,22 @@ fun DetailedStageCard(
 @Composable
 fun StageBillRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 3.dp),
+        verticalAlignment = Alignment.Top
     ) {
         Text(
             text = label,
+            modifier = Modifier.weight(0.44f),
             style = MaterialTheme.typography.bodySmall,
             color = InkSecondary
         )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = value,
+            modifier = Modifier.weight(0.56f),
+            textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Monospace,

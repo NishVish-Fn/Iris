@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -408,12 +409,22 @@ fun LeadCard(
 @Composable
 fun InfoRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 3.dp),
+        verticalAlignment = Alignment.Top
     ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = InkSecondary)
+        Text(
+            text = label,
+            modifier = Modifier.weight(0.44f),
+            style = MaterialTheme.typography.labelSmall,
+            color = InkSecondary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = value,
+            modifier = Modifier.weight(0.56f),
+            textAlign = TextAlign.End,
             style = MaterialTheme.typography.labelSmall,
             fontFamily = FontFamily.Monospace,
             color = InkPrimary,
@@ -435,10 +446,24 @@ fun QuoteRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(vertical = 3.dp),
+        verticalAlignment = Alignment.Top
     ) {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = InkSecondary)
-        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Monospace)
+        Text(
+            text = label,
+            modifier = Modifier.weight(0.45f),
+            style = MaterialTheme.typography.bodySmall,
+            color = InkSecondary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = value,
+            modifier = Modifier.weight(0.55f),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+            color = InkPrimary
+        )
     }
 }

@@ -106,6 +106,7 @@ data class QCloudEvidence(
 data class LiveReoptimizeResponse(
     @SerializedName("status") val status: String = "",
     @SerializedName("source") val source: String = "LIVE DEMO RUN",
+    @SerializedName("solver_type") val solverType: String = "QpiAI HUBO (Cubic Scaffold)",
     @SerializedName("job_id") val jobId: String = "",
     @SerializedName("runtime_ms") val runtimeMs: Double = 0.0,
     @SerializedName("energy") val energy: Double = 0.0,
@@ -118,6 +119,7 @@ data class LiveReoptimizeResponse(
 data class QProbeResponse(
     @SerializedName("service") val service: String = "QpiAI Quantum",
     @SerializedName("source") val source: String = "LIVE DEMO RUN",
+    @SerializedName("circuit_type") val circuitType: String = "ZZ-Feature Map (Ring Entangled)",
     @SerializedName("job_id") val jobId: String = "",
     @SerializedName("pubchem_sid") val pubchemSid: String = "",
     @SerializedName("feature_angles_rad") val featureAngles: List<Double> = emptyList(),
